@@ -12,3 +12,7 @@ deployment:
     branch: release
     commands:
       - gvm use go1.4.1 && make cross
+
+general:
+  artifacts:
+    - "build/" # relative to the build directory
