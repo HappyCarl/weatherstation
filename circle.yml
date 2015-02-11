@@ -1,0 +1,11 @@
+dependencies:
+  pre:
+    - make deps
+  override:
+    - make cross
+
+deployment:
+  release:
+    branch: release
+    commands:
+      - make cross
