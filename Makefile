@@ -21,7 +21,7 @@ cross: deps setup_cross
 		do \
 			for GOOS in $(OS);\
 			do\
-			GO_ENABLED=0 GOOS=$$GOOS GOARCH=$$GOARCH go build -o "build/$$GOOS/$(NAME).$$GOARCH";\
+			GO_ENABLED=0 GOOS=$$GOOS GOARCH=$$GOARCH go build -o "build/$$GOOS/$(NAME).$$GOOS.$$GOARCH";\
 			done \
 		done
 
