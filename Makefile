@@ -1,6 +1,7 @@
 NAME=weatherstation
 OS=darwin windows linux freebsd
 ARCHS=amd64 arm 386
+TARGET_DIR=build
 
 all: build
 
@@ -21,8 +22,12 @@ cross: deps setup_cross
 		do \
 			for GOOS in $(OS);\
 			do\
-			GO_ENABLED=0 GOOS=$$GOOS GOARCH=$$GOARCH go build -o "build/$$GOOS/$(NAME).$$GOOS.$$GOARCH";\
+			GO_ENABLED=0 GOOS=$$GOOS GOARCH=$$GOARCH go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH";\
 			done \
+		done
+	@for ARCH in $(ARCHS);\
+		do \
+		mv "$(TARGET_DIR)/windows/$(NAME).windows.$$ARCH" "$(TARGET_DIR)/windows/$(NAME).windows.$$ARCH.exe";\
 		done
 
 setup_cross:
