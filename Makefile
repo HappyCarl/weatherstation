@@ -8,14 +8,15 @@ all: build
 build: deps
 	go build -o "build/$(NAME)"
 
-run:
+run: deps
 	go run weatherstation.go
 
 clean:
 	rm -rf build/
 
 deps:
-	@echo "no deps yet..."
+	go get github.com/tarm/goserial
+	go get code.google.com/p/gcfg
 
 cross: deps setup_cross
 	@for GOARCH in $(ARCHS);\
