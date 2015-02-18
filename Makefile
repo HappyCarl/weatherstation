@@ -18,12 +18,12 @@ deps:
 	go get github.com/tarm/goserial
 	go get code.google.com/p/gcfg
 
-cross: deps setup_cross
+cross: setup_cross deps 
 	@for GOARCH in $(ARCHS);\
 		do \
 			for GOOS in $(OS);\
 			do\
-			GO_ENABLED=0 GOOS=$$GOOS GOARCH=$$GOARCH go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH";\
+			GO_ENABLED=1 GOOS=$$GOOS GOARCH=$$GOARCH go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH";\
 			done \
 		done
 	@for ARCH in $(ARCHS);\
