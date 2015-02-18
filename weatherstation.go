@@ -4,6 +4,7 @@ import (
   "github.com/tarm/goserial"
   "code.google.com/p/gcfg"
   "log"
+  "flag"
   )
 
 type Config struct {
@@ -13,8 +14,14 @@ type Config struct {
 }
 
 func main() {
+
+  var configFile = flag.String("config", "config.gcfg", "Path to Config-File.")
+
+  flag.Parse()
+
+
   log.Print("Reading Config...")
-  err, cfg := ParseConfig()
+  err, cfg := ParseConfig(*configFile)
 
   if err != nil {
     log.Fatal(err)
@@ -53,10 +60,10 @@ func StartCommunication(port string) {
   log.Print("%q", buf[:n])*/
 }
 
-func ParseConfig() (error, Config) {
+func ParseConfig(configFile string) (error, Config) {
   var cfg Config
 
-  err := gcfg.ReadFileInto(&cfg, "config.gcfg")
+  err := gcfg.ReadFileInto(&cfg, configFile)
 
   return err, cfg
 }
