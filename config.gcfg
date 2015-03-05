@@ -1,2 +1,7 @@
 [communication]
-port=COM42
+port=/dev/tty.SLAB_USBtoUART
+
+[openweathermap]
+stationname=Test
+username=username
+password=password

@@ -1,48 +1,45 @@
 package openweathermap
 
 import (
-	"encoding/json"
+	"io/ioutil"
 	"fmt"
 	"net/http"
+	"net/url"
 	"bytes"
+	"strings"
+	base64 "encoding/base64"
 )
 
+func Base64Encode(input string) (string) {
+	return base64.StdEncoding.EncodeToString([]byte(input))
+}
 
-func Transmit(temperature string, humidity string, wind_speed string, rain_1h string, rain_24h string) {
-	var buffer bytes.Buffer
 
-	buffer.WriteString("http://openweathermap.org/data/post?")
+func Transmit(temperature string, humidity string, wind_speed string, rain_1h string, rain_24h string, station_name string, username string, password string) {
+	data := url.Values{}
 
 	if(temperature != "") {
-		buffer.WriteString("temp=")
-		buffer.WriteString(temperature)
-		buffer.WriteString("&")
+		data.Set("temp", temperature)
 	}
 
 	if(wind_speed != "") {
-		buffer.WriteString("wind_speed=")
-		buffer.WriteString(wind_speed)
-		buffer.WriteString("&")
+		data.Set("wind_speed", wind_speed)
 	}
 
 	if(rain_1h != "") {
-		buffer.WriteString("rain_1h=")
-		buffer.WriteString(rain_1h)
-		buffer.WriteString("&")
+		data.Set("rain_1h", rain_1h)
 	}
 
 	if(rain_24h != "") {
-		buffer.WriteString("rain_24h=")
-		buffer.WriteString(rain_24h)
-		buffer.WriteString("&")
+		data.Set("rain_24h", rain_24h)
 	}
 
-	url := buffer.String()
+	url := "http://openweathermap.org/data/post"
 
-	fmt.Println(url)
+	auth_data := Base64Encode(strings.Join([]string{username, ":", password}, ""))
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer())
-	req.Header.Set("Authorization", "Basic *DATA HERE*")
+	req, err := http.NewRequest("POST", url, bytes.NewBufferString(data.Encode()))
+	req.Header.Set("Authorization", strings.Join([]string{"Basic", auth_data}, ""))
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

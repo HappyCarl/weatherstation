@@ -5,11 +5,18 @@ import (
   "code.google.com/p/gcfg"
   "log"
   "flag"
+  "bytes"
+  "strings"
   )
 
 type Config struct {
   Communication struct {
     Port string
+  }
+  OpenWeatherMap struct {
+    StationName string
+    Username string
+    Password string
   }
 }
 
@@ -46,18 +53,44 @@ func StartCommunication(port string) {
 
   log.Print("Port has been opened.")
 
-  /*
-  n, err := s.Write([]byte("test"))
-  if err != nil {
-    log.Fatal(err)
-  }
 
-  buf := make([]byte, 128)
-  n, err = s.Read(buf)
-  if err != nil {
-      log.Fatal(err)
+  for true {
+    var buffer bytes.Buffer
+    stop := false
+
+    for !stop {
+      buf := make([]byte, 4)
+      _, err = s.Read(buf)
+      if err != nil {
+          log.Fatal(err)
+      } else {
+        value := string(buf)
+        buffer.WriteString(value)
+        stop = value[0] == '\015'
+      }
+    }
+
+    data := buffer.String()
+    data = strings.TrimSpace(data)
+
+    Upload(data)
   }
-  log.Print("%q", buf[:n])*/
+}
+
+func Upload(data string) {
+  split := strings.Split(data, ";")
+
+  temperature_1 := strings.Replace(split[3], ",", ".", 1)
+  temperature_2 := strings.Replace(split[19], ",", ".", 1)
+  humidity_1    := split[11]
+  humidity_2    := split[20]
+  wind_speed    := split[21]
+  rain_ticks    := split[22]
+  rain          := split[23]
+
+  //owm.Transmit()
+
+  log.Print("Temp 1: " + string(temperature_1) +" Temp 2: " + string(temperature_2) +" Humidity 1: " + humidity_1 +" Humidity 2: " + humidity_2 +" WindSpeed: " + wind_speed +" Rain Ticks: " + rain_ticks + " Rain: " + rain)
 }
 
 func ParseConfig(configFile string) (error, Config) {
