@@ -19,7 +19,7 @@ deps:
 	go get code.google.com/p/gcfg
 
 cross: setup_cross deps
-	CC=arm-linux-gnueabi-gcc CGO_ENABLED=1 GOOS=linux GOARCH=arm go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH"
+	CC=arm-linux-gnueabihf-gcc CGO_ENABLED=1 GOOS=linux GOARCH=arm go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH"
 	CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH"
 	CGO_ENABLED=1 GOOS=darwin GOARCH=386 go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH"
 	CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH.exe"
