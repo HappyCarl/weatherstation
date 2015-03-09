@@ -1,7 +1,7 @@
 dependencies:
   pre:
     - sudo apt-get install gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabi mingw-w64
-    - bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
+    - bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer) || true 
     - gvm install go1.4.1  --prefer-binary
     - gvm use go1.4.1
     - gvm use go1.4.1 && make deps
