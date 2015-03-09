@@ -8,7 +8,7 @@ dependencies:
   override:
     - gvm use go1.4.1 && make setup_cross
   cache_directories:
-    - ".gvm/"
+    - "~/.gvm/"
 
 deployment:
   release:
