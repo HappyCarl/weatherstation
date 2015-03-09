@@ -7,6 +7,8 @@ dependencies:
     - gvm use go1.4.1 && make deps
   override:
     - gvm use go1.4.1 && make setup_cross
+  cache_directories:
+    - .gvm/
 
 deployment:
   release:
