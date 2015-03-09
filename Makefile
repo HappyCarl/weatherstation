@@ -1,5 +1,5 @@
 NAME=weatherstation
-OS=darwin windows linux freebsd
+OS=darwin windows linux
 ARCHS=amd64 arm 386
 TARGET_DIR=build
 
@@ -18,18 +18,14 @@ deps:
 	go get github.com/tarm/goserial
 	go get code.google.com/p/gcfg
 
-cross: setup_cross deps 
-	@for GOARCH in $(ARCHS);\
-		do \
-			for GOOS in $(OS);\
-			do\
-			GO_ENABLED=1 GOOS=$$GOOS GOARCH=$$GOARCH go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH";\
-			done \
-		done
-	@for ARCH in $(ARCHS);\
-		do \
-		mv "$(TARGET_DIR)/windows/$(NAME).windows.$$ARCH" "$(TARGET_DIR)/windows/$(NAME).windows.$$ARCH.exe";\
-		done
+cross: setup_cross deps
+	CC=arm-linux-gnueabi-gcc CGO_ENABLED=1 GOOS=linux GOARCH=arm go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH"
+	CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH"
+	CGO_ENABLED=1 GOOS=darwin GOARCH=386 go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH"
+	CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH.exe"
+	CGO_ENABLED=1 GOOS=windows GOARCH=386 go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH.exe"
+	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH"
+	CGO_ENABLED=1 GOOS=linux GOARCH=386 go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH"
 
 setup_cross:
 	@for GOARCH in $(ARCHS);\
