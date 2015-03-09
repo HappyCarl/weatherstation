@@ -24,7 +24,7 @@ cross: setup_cross deps
 	#CC=arm-linux-gnueabihf-gcc CGO_ENABLED=1 GOOS=linux GOARCH=arm go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH"
 	#CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH"
 	#CGO_ENABLED=1 GOOS=darwin GOARCH=386 go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH"
-	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).linux.amd64"
+	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o "$(TARGET_DIR)/linux/$(NAME).linux.amd64"
 	#CGO_ENABLED=1 GOOS=linux GOARCH=386 go build -o "$(TARGET_DIR)/$$GOOS/$(NAME).$$GOOS.$$GOARCH"
 
 setup_cross:
