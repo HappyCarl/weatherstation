@@ -14,6 +14,10 @@ deployment:
     commands:
       - gvm use go1.4.1 && make cross
 
+test:
+  override:
+    - echo "no tests"
+
 general:
   artifacts:
     - "build/" # relative to the build directory
