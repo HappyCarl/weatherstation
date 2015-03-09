@@ -7,6 +7,7 @@ import (
   "flag"
   "bytes"
   "strings"
+  "strconv"
   owm "./openweathermap"
   )
 
@@ -82,19 +83,23 @@ func StartCommunication(port string, cfg Config) {
 func Upload(data string, cfg Config) {
   split := strings.Split(data, ";")
 
-  temperature_1 := strings.Replace(split[3], ",", ".", 1)
-  temperature_2 := strings.Replace(split[19], ",", ".", 1)
-  humidity_1    := split[11]
-  humidity_2    := split[20]
-  wind_speed    := split[21]
-  rain_ticks    := split[22]
-  rain          := split[23]
+  temperature_1, _ := strconv.ParseFloat(strings.Replace(split[3], ",", ".", 1), 32)
+  temperature_2, _ := strconv.ParseFloat(strings.Replace(split[19], ",", ".", 1), 32)
+  temperature      := strconv.FormatFloat((temperature_1 + temperature_2) / 2, 'g', 1, 64)
 
-  // TODO: Calculate average values
+  humidity_1, _    := strconv.ParseFloat(split[11], 32)
+  humidity_2, _    := strconv.ParseFloat(split[20], 32)
+  humidity         := strconv.FormatFloat((humidity_1 + humidity_2) / 2, 'g', 1, 64)
+
+  wind_speed       := split[21]
+
+  rain_ticks       := split[22]
+  rain             := split[23]
+
   // TODO: Calculate Rain Values
-  owm.Transmit(temperature_1, humidity_1, wind_speed, "0", "0", cfg.OpenWeatherMap.StationName, cfg.OpenWeatherMap.Username, cfg.OpenWeatherMap.Password)
+  owm.Transmit(temperature, humidity, wind_speed, "0", "0", cfg.OpenWeatherMap.StationName, cfg.OpenWeatherMap.Username, cfg.OpenWeatherMap.Password)
 
-  log.Print("Temp 1: " + string(temperature_1) +" Temp 2: " + string(temperature_2) +" Humidity 1: " + humidity_1 +" Humidity 2: " + humidity_2 +" WindSpeed: " + wind_speed +" Rain Ticks: " + rain_ticks + " Rain: " + rain)
+  log.Print("Temp: " + string(temperature) +" Humidity: " + humidity +" WindSpeed: " + wind_speed +" Rain Ticks: " + rain_ticks + " Rain: " + rain)
 }
 
 func ParseConfig(configFile string) (error, Config) {
