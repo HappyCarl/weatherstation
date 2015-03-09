@@ -3,5 +3,5 @@ port=/dev/tty.SLAB_USBtoUART
 
 [openweathermap]
 stationname=Test
-username=username
-password=password
+username=u
+password=p

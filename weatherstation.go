@@ -7,6 +7,7 @@ import (
   "flag"
   "bytes"
   "strings"
+  owm "./openweathermap"
   )
 
 type Config struct {
@@ -37,10 +38,11 @@ func main() {
 
   log.Print("Config has been read.")
 
-  StartCommunication(cfg.Communication.Port)
+
+  StartCommunication(cfg.Communication.Port, cfg)
 }
 
-func StartCommunication(port string) {
+func StartCommunication(port string, cfg Config) {
   c := &serial.Config{Name: port, Baud: 9600}
 
   log.Print("Starting Communication")
@@ -73,11 +75,11 @@ func StartCommunication(port string) {
     data := buffer.String()
     data = strings.TrimSpace(data)
 
-    Upload(data)
+    Upload(data, cfg)
   }
 }
 
-func Upload(data string) {
+func Upload(data string, cfg Config) {
   split := strings.Split(data, ";")
 
   temperature_1 := strings.Replace(split[3], ",", ".", 1)
@@ -88,7 +90,9 @@ func Upload(data string) {
   rain_ticks    := split[22]
   rain          := split[23]
 
-  //owm.Transmit()
+  // TODO: Calculate average values
+  // TODO: Calculate Rain Values
+  owm.Transmit(temperature_1, humidity_1, wind_speed, "0", "0", cfg.OpenWeatherMap.StationName, cfg.OpenWeatherMap.Username, cfg.OpenWeatherMap.Password)
 
   log.Print("Temp 1: " + string(temperature_1) +" Temp 2: " + string(temperature_2) +" Humidity 1: " + humidity_1 +" Humidity 2: " + humidity_2 +" WindSpeed: " + wind_speed +" Rain Ticks: " + rain_ticks + " Rain: " + rain)
 }

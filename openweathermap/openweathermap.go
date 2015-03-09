@@ -2,11 +2,11 @@ package openweathermap
 
 import (
 	"io/ioutil"
-	"fmt"
 	"net/http"
 	"net/url"
 	"bytes"
 	"strings"
+	"log"
 	base64 "encoding/base64"
 )
 
@@ -39,7 +39,7 @@ func Transmit(temperature string, humidity string, wind_speed string, rain_1h st
 	auth_data := Base64Encode(strings.Join([]string{username, ":", password}, ""))
 
 	req, err := http.NewRequest("POST", url, bytes.NewBufferString(data.Encode()))
-	req.Header.Set("Authorization", strings.Join([]string{"Basic", auth_data}, ""))
+	req.Header.Set("Authorization", strings.Join([]string{"Basic", auth_data}, " "))
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -48,9 +48,11 @@ func Transmit(temperature string, humidity string, wind_speed string, rain_1h st
 	}
 	defer resp.Body.Close()
 
-	fmt.Println("response Status:", resp.Status)
-	fmt.Println("response Headers:", resp.Header)
-	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("response Body:", string(body))
+	if(resp.StatusCode == 200) {
+		log.Print("Successfully uploaded data.")
+	} else {
+		body, _ := ioutil.ReadAll(resp.Body)
+		log.Print("Failed to transmit Data. ", resp.Status, " Body: ", string(body))
+	}
 
 }
