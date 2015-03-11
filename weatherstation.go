@@ -23,7 +23,6 @@ type Config struct {
 }
 
 func main() {
-
   var configFile = flag.String("config", "config.gcfg", "Path to Config-File.")
 
   flag.Parse()
@@ -80,26 +79,53 @@ func StartCommunication(port string, cfg Config) {
   }
 }
 
+func Convert(data string) (float64, error) {
+  return strconv.ParseFloat(strings.TrimSpace(strings.Replace(strings.Replace(data, ",", ".", 1), "\x00", "", 42)), 64)
+}
+
 func Upload(data string, cfg Config) {
+  log.Print("Received Data: ", data)
   split := strings.Split(data, ";")
 
-  temperature_1, _ := strconv.ParseFloat(strings.Replace(split[3], ",", ".", 1), 32)
-  temperature_2, _ := strconv.ParseFloat(strings.Replace(split[19], ",", ".", 1), 32)
-  temperature      := strconv.FormatFloat((temperature_1 + temperature_2) / 2, 'g', 1, 64)
+  temperature_1, err1 := Convert(split[3])
+  temperature_2, err2 := Convert(split[19])
+  temperature         := (temperature_1 + temperature_2) / 2
 
-  humidity_1, _    := strconv.ParseFloat(split[11], 32)
-  humidity_2, _    := strconv.ParseFloat(split[20], 32)
-  humidity         := strconv.FormatFloat((humidity_1 + humidity_2) / 2, 'g', 1, 64)
+  if err1 != nil && err2 == nil {
+    temperature = temperature_1
+  } else if err1 == nil && err2 != nil {
+    temperature = temperature_2
+  }
+
+  temperature_s := strconv.FormatFloat(temperature, 'g', 1, 64)
+
+  humidity_1, errA    := Convert(split[11])
+  humidity_2, errB    := Convert(split[20])
+  humidity            := (humidity_1 + humidity_2) / 2
+
+  if errA != nil && errB == nil {
+    humidity = humidity_1
+  } else if errA == nil && errB != nil {
+    humidity = humidity_2
+  }
+
+  humidity_s := strconv.FormatFloat(humidity, 'g', 1, 64)
 
   wind_speed       := split[21]
 
-  rain_ticks       := split[22]
+  //TODO: Calc Rain 4 real
+  //∆1minute, put into db (or local, ggf arraylist)
+  // WS/(2*A(in cm^2, 86.6))
+
+  peter, _ := Convert(split[22])
+
+  rain_ticks       := strconv.FormatFloat((peter * 0.295), 'g', 1, 64)
   rain             := split[23]
 
   // TODO: Calculate Rain Values
-  owm.Transmit(temperature, humidity, wind_speed, "0", "0", cfg.OpenWeatherMap.StationName, cfg.OpenWeatherMap.Username, cfg.OpenWeatherMap.Password)
+  owm.Transmit(temperature_s, humidity_s, wind_speed, rain_ticks, rain_ticks, cfg.OpenWeatherMap.StationName, cfg.OpenWeatherMap.Username, cfg.OpenWeatherMap.Password)
 
-  log.Print("Temp: " + string(temperature) +" Humidity: " + humidity +" WindSpeed: " + wind_speed +" Rain Ticks: " + rain_ticks + " Rain: " + rain)
+  log.Print("Temp: " + temperature_s +" Humidity: " + humidity_s +" WindSpeed: " + wind_speed +" Rain Ticks: " + rain_ticks + " Rain: " + rain)
 }
 
 func ParseConfig(configFile string) (error, Config) {
