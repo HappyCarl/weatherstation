@@ -164,6 +164,11 @@ func calculateRain(rain_ticks int) (float64, float64) {
 
   //time since last run
   minutes_since_last_run := int(time.Since(last_update).Minutes())
+  //horrible hack for first run, when receiving data without passing a minute
+  if(minutes_since_last_run == 0) {
+    minutes_since_last_run = 1
+  }
+
   last_update = time.Now()
 
   //delta ticks
