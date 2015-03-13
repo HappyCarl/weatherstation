@@ -15,7 +15,7 @@ func Base64Encode(input string) (string) {
 }
 
 
-func Transmit(temperature string, humidity string, wind_speed string, rain_1h string, rain_24h string, station_name string, username string, password string) {
+func Transmit(temperature string, humidity string, wind_speed string, rain_1h string, rain_24h string, station_name string, username string, password string, longitude string, latitude string) {
 	data := url.Values{}
 
 	if(temperature != "") {
@@ -33,6 +33,9 @@ func Transmit(temperature string, humidity string, wind_speed string, rain_1h st
 	if(rain_24h != "") {
 		data.Set("rain_24h", rain_24h)
 	}
+	
+	data.Set("lat", latitude)
+	data.Set("lon", longitude)
 
 	url := "http://openweathermap.org/data/post"
 
