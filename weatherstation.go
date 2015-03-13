@@ -126,7 +126,7 @@ func Upload(data string, cfg Config) {
 
   humidity_s := strconv.FormatFloat(humidity, 'g', 1, 64)
 
-  wind_speed       := split[21]
+  wind_speed       := strconv.FormatFloat(Convert(split[21]), 'g', 1, 64)
 
   //TODO: Calc Rain 4 real
   //∆1minute, put into db (or local, ggf arraylist)
