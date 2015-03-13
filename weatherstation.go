@@ -13,6 +13,10 @@ import (
   )
 
 type Config struct {
+  Data struct {
+    Latitude string
+    Longitude string
+  }
   Communication struct {
     Port string
   }
@@ -137,7 +141,7 @@ func Upload(data string, cfg Config) {
   rain             := split[23]
 
   // TODO: Calculate Rain Values
-  owm.Transmit(temperature_s, humidity_s, wind_speed, rain_1h_s, rain_24h_s, cfg.OpenWeatherMap.StationName, cfg.OpenWeatherMap.Username, cfg.OpenWeatherMap.Password)
+  owm.Transmit(temperature_s, humidity_s, wind_speed, rain_1h_s, rain_24h_s, cfg.OpenWeatherMap.StationName, cfg.OpenWeatherMap.Username, cfg.OpenWeatherMap.Password, cfg.Data.Longitude, cfg.Data.Latitude)
 
   log.Print("Temp: " + temperature_s +" Humidity: " + humidity_s +" WindSpeed: " + wind_speed +" Rain Ticks: " + rain_ticks_s + " Rain 1h: " + rain_1h_s + " Rain 24h: " + rain_24h_s + " Rain: " + rain)
 }
