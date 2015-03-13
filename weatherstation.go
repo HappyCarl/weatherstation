@@ -128,15 +128,15 @@ func Upload(data string, cfg Config) {
   //∆1minute, put into db (or local, ggf arraylist)
   // WS/(2*A(in cm^2, 86.6))
 
-  peter, _ := Convert(split[22])
+  rain_ticks, _ := Convert(split[22])
 
-  rain_ticks       := strconv.FormatFloat((peter * 0.295), 'g', 1, 64)
+  rain_1h, rain24h := calculateRain(int(rain_ticks))
   rain             := split[23]
 
   // TODO: Calculate Rain Values
-  owm.Transmit(temperature_s, humidity_s, wind_speed, rain_ticks, rain_ticks, cfg.OpenWeatherMap.StationName, cfg.OpenWeatherMap.Username, cfg.OpenWeatherMap.Password)
+  owm.Transmit(temperature_s, humidity_s, wind_speed, rain_1h, rain_24h, cfg.OpenWeatherMap.StationName, cfg.OpenWeatherMap.Username, cfg.OpenWeatherMap.Password)
 
-  log.Print("Temp: " + temperature_s +" Humidity: " + humidity_s +" WindSpeed: " + wind_speed +" Rain Ticks: " + rain_ticks + " Rain: " + rain)
+  log.Print("Temp: " + temperature_s +" Humidity: " + humidity_s +" WindSpeed: " + wind_speed +" Rain Ticks: " + rain_ticks + " Rain 1h: " + rain_1h + " Rain 24h: " + rain_24h_ + " Rain: " + rain)
 }
 
 /*
