@@ -112,7 +112,7 @@ func Upload(data string, cfg Config) {
     temperature = temperature_2
   }
 
-  temperature_s := strconv.FormatFloat(temperature, 'g', 1, 64)
+  temperature_s := strconv.FormatFloat(temperature, 'f', 1, 64)
 
   humidity_1, errA    := Convert(split[11])
   humidity_2, errB    := Convert(split[20])
@@ -124,21 +124,21 @@ func Upload(data string, cfg Config) {
     humidity = humidity_2
   }
 
-  humidity_s := strconv.FormatFloat(humidity, 'g', 1, 64)
-  
+  humidity_s := strconv.FormatFloat(humidity, 'f', 1, 64)
+
   p, _ := Convert(split[21])
-  wind_speed       := strconv.FormatFloat(p, 'g', 1, 64)
+  wind_speed       := strconv.FormatFloat(p, 'f', 1, 64)
 
   //TODO: Calc Rain 4 real
   //∆1minute, put into db (or local, ggf arraylist)
   // WS/(2*A(in cm^2, 86.6))
 
   rain_ticks, _ := Convert(split[22])
-  rain_ticks_s := strconv.FormatFloat(rain_ticks, 'g', 1, 64)
+  rain_ticks_s := strconv.FormatFloat(rain_ticks, 'f', 1, 64)
 
   rain_1h, rain_24h := calculateRain(int(rain_ticks))
-  rain_1h_s := strconv.FormatFloat(rain_1h, 'g', 1, 64)
-  rain_24h_s := strconv.FormatFloat(rain_24h, 'g', 1, 64)
+  rain_1h_s := strconv.FormatFloat(rain_1h, 'f', 1, 64)
+  rain_24h_s := strconv.FormatFloat(rain_24h, 'f', 1, 64)
   rain             := split[23]
 
   // TODO: Calculate Rain Values
