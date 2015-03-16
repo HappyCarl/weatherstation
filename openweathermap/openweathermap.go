@@ -33,6 +33,10 @@ func Transmit(temperature string, humidity string, wind_speed string, rain_1h st
 	if(rain_24h != "") {
 		data.Set("rain_24h", rain_24h)
 	}
+	
+	if(station_name != "") {
+		data.Set("name", station_name)
+	}
 
 	data.Set("lat", latitude)
 	data.Set("long", longitude)
