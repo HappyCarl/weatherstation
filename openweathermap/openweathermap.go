@@ -21,6 +21,10 @@ func Transmit(temperature string, humidity string, wind_speed string, rain_1h st
 	if(temperature != "") {
 		data.Set("temp", temperature)
 	}
+	
+	if(humidity != "") {
+		data.Set("humidity", humidity)	
+	}
 
 	if(wind_speed != "") {
 		data.Set("wind_speed", wind_speed)
@@ -40,6 +44,7 @@ func Transmit(temperature string, humidity string, wind_speed string, rain_1h st
 
 	data.Set("lat", latitude)
 	data.Set("long", longitude)
+	data.Set("alt", 17)
 
 	url := "http://openweathermap.org/data/post"
 
