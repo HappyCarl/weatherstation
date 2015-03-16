@@ -47,3 +47,10 @@ Das Programm
 -------------------------------
 
 Das Wetterstationsprogramm ist in [Go](https://golang.org/) geschrieben. Der Quellcode ist entweder auf [GitHub](https://github.com/HappyCarl/weatherstation/) oder im Ordner ~/weatherstation-source zu finden.
+
+Anmerkung zum Thema "Funk"
+--------------------------------
+
+Wie in dieser Dokumentation schon ersichtlich geworden sein sollte, kommunizieren die Wettersensoren über ein [Funk](https://www.youtube.com/watch?v=mUsn880UWPQ)-Protokoll.
+
+![](http://i.minus.com/iwmeWi3Dkfpcx.gif)
