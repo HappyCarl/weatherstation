@@ -33,7 +33,7 @@ func Transmit(temperature string, humidity string, wind_speed string, rain_1h st
 	if(rain_24h != "") {
 		data.Set("rain_24h", rain_24h)
 	}
-	
+
 	data.Set("lat", latitude)
 	data.Set("long", longitude)
 
@@ -52,7 +52,8 @@ func Transmit(temperature string, humidity string, wind_speed string, rain_1h st
 	defer resp.Body.Close()
 
 	if(resp.StatusCode == 200) {
-		log.Print("Successfully uploaded data.")
+		body, _ := ioutil.ReadAll(resp.Body)
+		log.Print("Successfully uploaded data. ", resp.Status, " Body: ", string(body))
 	} else {
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.Print("Failed to transmit Data. ", resp.Status, " Body: ", string(body))
