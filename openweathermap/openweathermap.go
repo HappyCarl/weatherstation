@@ -50,7 +50,7 @@ func Transmit(temperature string, humidity string, wind_speed string, rain_1h st
 
 	auth_data := Base64Encode(strings.Join([]string{username, ":", password}, ""))
 	log.Print("Sending: ", data.Encode())
-	req, err := http.NewRequest("POST", url, bytes.NewBufferString(data.Encode()))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data.Encode()))
 	req.Header.Set("Authorization", strings.Join([]string{"Basic", auth_data}, " "))
 
 	client := &http.Client{}
