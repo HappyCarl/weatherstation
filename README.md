@@ -36,17 +36,18 @@ Der USB-Empfänger meldet sich als serielles Gerät, die Baud-Rate ist auf `1920
 Dieser Server
 ------------------------------
 
-Der Server läuft, und das soll auch so bleiben... Änderungen sollten *nur von fähigen Leuten* durchgeführt werden, für die `Linux` kein Fremdwort ist. Falls dieses Projekt später von einem anderen Jahrgang wieder aufgenommen wird, sollten an diesem Server *nur* Oberstufenschüler, die in Informatik LKs absolut unterfordert sind, arbeiten. Falls gegen 2019 ein solcher Schüler vorhanden sein sollte, kann er gerne das System updaten. 
+Der Server läuft, und das soll auch so bleiben... Änderungen sollten *nur von fähigen Leuten* durchgeführt werden, für die `Linux` kein Fremdwort ist. Falls dieses Projekt später von einem anderen Jahrgang wieder aufgenommen wird, sollten an diesem Server *nur* Oberstufenschüler, die in Informatik LKs absolut unterfordert sind, arbeiten. Falls gegen 2017 ein solcher Schüler vorhanden sein sollte, kann er gerne das System updaten. 
 Es ist ein Ubuntu 14.04.2 LTS Server (64-bit), der bis zum Jahre 2017 mit Sicherheitsupdates versorgt wird.
 Systemupdates werden wöchentlich eingespielt, das System startet monatlich 1x neu.
 
-Unter Iserv ist der PC im alten Serverraum 89 eingetragen, der Hostname ist `wetterstation.hgo-ol.de`, die IP ist `10.16.89.42`.  
+Unter Iserv ist der PC im alten Serverraum 89 eingetragen, der Hostname ist `wetterstation.hgo-ol.de`, die IP ist `10.16.89.42`.  Der Server ist über SSH auf Port 22 zu erreichen, Benutzername ist `wetterstation`. Das Passwort findet sich bei den analogen Unterlagen zur Wetterstation und/oder auf der ausgedruckten Version dieses Zettels. Falls das Passwort nicht mehr aufzufinden ist, die Festplatte ist nicht verschlüsselt und die Daten liegen in einer LVM Partition.
 
 
 Das Programm
 -------------------------------
 
-Das Wetterstationsprogramm ist in [Go](https://golang.org/) geschrieben. Der Quellcode ist entweder auf [GitHub](https://github.com/HappyCarl/weatherstation/) oder im Ordner ~/weatherstation-source zu finden.
+Das Wetterstationsprogramm ist in [Go](https://golang.org/) geschrieben. Der Quellcode ist entweder auf [GitHub](https://github.com/HappyCarl/weatherstation/) oder im Ordner ~/weatherstation-source zu finden. Der Code ist mehr oder weniger dokumentiert.
+Das Programm liest die Daten von dem Empfänger und liest aus dem "LogView" Format die benötigten Daten aus. Eine Erklärung zu dem Format findet sich in der Bedienungsanleitung des USB-Empfängers. Die geparsten Daten werden über WebSockets zur Verfügung gestellt. Der WebSocket Port muss über den Iserv von `wetterstation.hgo.ol.de:xxxxx` nach `hgo-ol.de:xxxxx` geforwarded werden, um aus dem Internet ereichbar zu sein.
 
 Anmerkung zum Thema "Funk"
 --------------------------------
