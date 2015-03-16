@@ -1,0 +1,40 @@
+HGO Wetterstation Dokumentation
+===============================
+
+Vorwort
+-------------------------------
+Wir schreiben das Jahr 2015, ein weiterer Abi-Jahrgang ist kurz davor
+endlich von der Last der Schule erlöst zu werden. Mit uns wird Herr Baumert die
+Schule verlassen und in Rente gehen und damit die neue Zeitrechung
+ "nach Baumert" starten. Tatort ist das Seminarfach "Naturwissenschaft im Alltag".  Unter der Leitung Frau Eckmeyers ergab sich die Idee, die Relikte der
+alten Wetterstation wiederzubeleben. Eine fachmännische Analyse ergab:
+
+ * Die Wetterkamera ist (ziemlich sicher) auf Firmware-Level kaputt, sie reagiert nicht mehr auf IP Kommunikation, Anschaffung einer neuen Kamera passte zeitlich nicht
+ * Trotz vergammelter Kabel funktionierten die Sensoren noch, allerdings war der Funk-Empfänger eine Wetter-Uhr mit undokumentiertem USB-Protokoll mit Treibern, die für Win2k gedacht waren
+ * Neben Vor-Abi auch noch eine Wetterstation aufzubauen, kann man machen, es macht aber durchaus Arbeit
+
+Material
+-----------------------------
+
+Für den Betrieb der Wetterstation wurden neue Sensoren von ELV angeschafft.
+Auf dem Dach sollten sich folgende Sensoren befinden:
+ * [ELV KS-300-4 Funk-Kombi-Wettersensor](http://www.elv.de/output/controller.aspx?cid=74&detail=10&detail2=13109)
+   Der Funk-Kombi-Sensor misst die Außentemperatur, Luftfeuchtigkeit, Windgeschwindigkeit und Regenmenge
+ * [ELV ASH2200 Funk-Außensensor](http://www.elv.de/output/controller.aspx?cid=74&detail=10&detail2=20564)
+   Der extra Außensensor (plaziert in der kleinen Box auf dem Dach) liefert eine zweite Messung von Temperatur und Luftfeuchtigkeit
+
+Die Außensensoren sind batteriebetrieben, falls irgendwann keine Daten mehr Empfangen werden, müssen an den Sensoren die Batterien getauscht werden.
+
+An dem PC befindet sich folgende Peripherie
+ * [ELV USB-WDE1 Wetterdatenempfänger](http://www.elv.de/-353.html)
+
+Im Unterordner `manuals` finden sich zu allen Sensoren und dem Empfänger die Gebrauchsanleitungen als PDF. Da kein Web-/FTP-Server installiert ist, müssten die Dokumente über sftp heruntergeladen werden.
+Der USB-Empfänger meldet sich als serielles Gerät, die Baud-Rate ist auf 19200 bit/s gesetzt. Der Empfänger ist unter /dev/ttyUSB0 zu finden.
+
+
+Dieser Server
+------------------------------
+
+Der Server läuft, und das soll auch so bleiben...
+Es ist ein Ubuntu 14.04.2 LTS Server, der bis zum Jahre 2019 mit Sicherheitsupdates versorgt wird.
+Systemupdates werden wöchentlich eingespielt, das System startet monatlich 1x neu
