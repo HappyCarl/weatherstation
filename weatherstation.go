@@ -19,6 +19,7 @@ type Config struct {
   }
   Communication struct {
     Port string
+    BaudRate int
   }
   OpenWeatherMap struct {
     StationName string
@@ -57,7 +58,7 @@ func main() {
 }
 
 func StartCommunication(port string, cfg Config) {
-  c := &serial.Config{Name: port, Baud: 9600}
+  c := &serial.Config{Name: port, Baud: cfg.Communication.BaudRate}
 
   log.Print("Starting Communication")
 
