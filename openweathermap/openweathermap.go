@@ -44,7 +44,7 @@ func Transmit(temperature string, humidity string, wind_speed string, rain_1h st
 
 	data.Set("lat", latitude)
 	data.Set("long", longitude)
-	data.Set("alt", 17)
+	data.Set("alt", "17")
 
 	url := "http://openweathermap.org/data/post"
 
