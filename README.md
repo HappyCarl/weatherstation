@@ -46,8 +46,13 @@ Unter Iserv ist der PC im alten Serverraum 89 eingetragen, der Hostname ist `wet
 Das Programm
 -------------------------------
 
-Das Wetterstationsprogramm ist in [Go](https://golang.org/) geschrieben. Der Quellcode ist entweder auf [GitHub](https://github.com/HappyCarl/weatherstation/) oder im Ordner ~/weatherstation-source zu finden. Der Code ist mehr oder weniger dokumentiert.
-Das Programm liest die Daten von dem Empfänger und liest aus dem "LogView" Format die benötigten Daten aus. Eine Erklärung zu dem Format findet sich in der Bedienungsanleitung des USB-Empfängers. Die geparsten Daten werden über WebSockets zur Verfügung gestellt. Der WebSocket Port muss über den Iserv von `wetterstation.hgo.ol.de:xxxxx` nach `hgo-ol.de:xxxxx` geforwarded werden, um aus dem Internet ereichbar zu sein.
+Das Wetterstationsprogramm ist in [Go](https://golang.org/) geschrieben. Der Quellcode ist entweder auf [GitHub](https://github.com/HappyCarl/weatherstation/) oder im Ordner `~/weatherstation-source` zu finden. Der Code ist mehr oder weniger dokumentiert.
+Das Programm liest die Daten von dem Empfänger und liest aus dem "LogView" Format die benötigten Daten aus. Eine Erklärung zu dem Format findet sich in der Bedienungsanleitung des USB-Empfängers. Die geparsten Daten werden über einen HTTP-Server als JSON zur Verfügung gestellt. Der HTTP-Server Port muss über den Iserv von `wetterstation.hgo.ol.de:xxxxx` nach `hgo-ol.de:xxxxx` weitergeleitet werden, um aus dem Internet ereichbar zu sein.
+
+Der Regenmesser
+-------------------------------
+
+Die Wetterstation liefert die Regenwerte als "Anzahl der Wippenschläge". Messungen haben ergeben, dass ungefähr 5ml Wasser die Wippe umkippen lassen und der Zähler erhöhen. Im Programm werden die Wippenschläge mit Hilfe der Oberfläche des Auffangtrichters in mm Wassersäule umgerechnet. In einem Array werden die letzten Wippenschlagdifferenzen über 1h bzw 24h gespeichert und dann die Regenmenge errechnet. 
 
 Anmerkung zum Thema "Funk"
 --------------------------------
