@@ -27,14 +27,23 @@ Die Außensensoren sind batteriebetrieben, falls irgendwann keine Daten mehr Emp
 
 An dem PC befindet sich folgende Peripherie
  * [ELV USB-WDE1 Wetterdatenempfänger](http://www.elv.de/-353.html)
+   Dieser Empfänger ist per USB-Kabel an einen USB 2 Port angeschlossen
 
 Im Unterordner `manuals` finden sich zu allen Sensoren und dem Empfänger die Gebrauchsanleitungen als PDF. Da kein Web-/FTP-Server installiert ist, müssten die Dokumente über sftp heruntergeladen werden.
-Der USB-Empfänger meldet sich als serielles Gerät, die Baud-Rate ist auf 19200 bit/s gesetzt. Der Empfänger ist unter /dev/ttyUSB0 zu finden.
+Der USB-Empfänger meldet sich als serielles Gerät, die Baud-Rate ist auf `19200` bit/s gesetzt. Der Empfänger ist unter `/dev/ttyUSB0` zu finden.
 
 
 Dieser Server
 ------------------------------
 
-Der Server läuft, und das soll auch so bleiben...
-Es ist ein Ubuntu 14.04.2 LTS Server, der bis zum Jahre 2019 mit Sicherheitsupdates versorgt wird.
-Systemupdates werden wöchentlich eingespielt, das System startet monatlich 1x neu
+Der Server läuft, und das soll auch so bleiben... Änderungen sollten *nur von fähigen Leuten* durchgeführt werden, für die `Linux` kein Fremdwort ist. Falls dieses Projekt später von einem anderen Jahrgang wieder aufgenommen wird, sollten an diesem Server *nur* Oberstufenschüler, die in Informatik LKs absolut unterfordert sind, arbeiten. Falls gegen 2019 ein solcher Schüler vorhanden sein sollte, kann er gerne das System updaten. 
+Es ist ein Ubuntu 14.04.2 LTS Server (64-bit), der bis zum Jahre 2017 mit Sicherheitsupdates versorgt wird.
+Systemupdates werden wöchentlich eingespielt, das System startet monatlich 1x neu.
+
+Unter Iserv ist der PC im alten Serverraum 89 eingetragen, der Hostname ist `wetterstation.hgo-ol.de`, die IP ist `10.16.89.42`.  
+
+
+Das Programm
+-------------------------------
+
+Das Wetterstationsprogramm ist in [Go](https://golang.org/) geschrieben. Der Quellcode ist entweder auf [GitHub](https://github.com/HappyCarl/weatherstation/) oder im Ordner ~/weatherstation-source zu finden.
