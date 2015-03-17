@@ -4,9 +4,7 @@ HGO Wetterstation Dokumentation
 Vorwort
 -------------------------------
 Wir schreiben das Jahr 2015, ein weiterer Abi-Jahrgang ist kurz davor
-endlich von der Last der Schule erlöst zu werden. Mit uns wird Herr Baumert die
-Schule verlassen und in Rente gehen und damit die neue Zeitrechung
- "nach Baumert" starten. Tatort ist das Seminarfach "Naturwissenschaft im Alltag".  Unter der Leitung Frau Eckmeyers ergab sich die Idee, die Relikte der
+endlich von der Last der Schule erlöst zu werden. Tatort ist das Seminarfach "Naturwissenschaft im Alltag".  Unter der Leitung Frau Eckmeyers ergab sich die Idee, die Relikte der
 alten Wetterstation wiederzubeleben. Eine fachmännische Analyse ergab:
 
  * Die Wetterkamera ist (ziemlich sicher) auf Firmware-Level kaputt, sie reagiert nicht mehr auf IP Kommunikation, Anschaffung einer neuen Kamera passte zeitlich nicht
@@ -30,7 +28,7 @@ An dem PC befindet sich folgende Peripherie
    Dieser Empfänger ist per USB-Kabel an einen USB 2 Port angeschlossen
 
 Im Unterordner `manuals` finden sich zu allen Sensoren und dem Empfänger die Gebrauchsanleitungen als PDF. Da kein Web-/FTP-Server installiert ist, müssten die Dokumente über sftp heruntergeladen werden.
-Der USB-Empfänger meldet sich als serielles Gerät, die Baud-Rate ist auf `19200` bit/s gesetzt. Der Empfänger ist unter `/dev/ttyUSB0` zu finden.
+Der USB-Empfänger meldet sich als serielles Gerät, die Baud-Rate ist auf `9600` gesetzt. Der Empfänger ist unter `/dev/ttyUSB0` zu finden.
 
 
 Dieser Server
