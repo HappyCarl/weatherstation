@@ -56,8 +56,8 @@ Das JSON-Array wird die folgende Form haben:
       "humidity": 42, //aktuelle Luftfeuchtigkeit in %, ohne Nachommastellen
       "wind_speed": 3.2, //Windgeschwindigkeit in km/h, mit 1 Nachkommastelle
       "rain": {
-         "1h": 15, //mm-Wassersäule, gefallen in der letzten Stunde
-         "24h": 42, //mm-Wassersäule, gefallen in den letzten 24 Stunden
+         "h1": 15, //mm-Wassersäule, gefallen in der letzten Stunde
+         "h24": 42, //mm-Wassersäule, gefallen in den letzten 24 Stunden
          "current": true //boolean, ob es gerade regnet
       }
    }
