@@ -1,5 +1,5 @@
 
-console.log("Loading weather data...")
+var weatherStationAddress = "http://localhost5678"; 
 
 //code from http://www.html5rocks.com/en/tutorials/cors/
 function createCORSRequest(method, url) {
@@ -26,10 +26,14 @@ function createCORSRequest(method, url) {
   return xhr;
 }
 
-var xhr = createCORSRequest('GET', "http://ipecho.net/plain");
+var xhr = createCORSRequest('GET', weatherStationAddress);
+
 xhr.onload = function() {
     var responseText = xhr.responseText;
-    console.log(responseText);
+    
+    var weatherInfo = JSON.parse(responseText);
+    console.log(weatherInfo);
+    updateView(weatherInfo);
 }
 xhr.onerror = function() {
   console.log('There was an error!');
@@ -37,7 +41,24 @@ xhr.onerror = function() {
 if (!xhr) {
   throw new Error('CORS not supported');
 } else {
-    xhr.send()
+    xhr.send();
 }
 
-templateDiv = document.getElementById("wetterstation-wetter")
+updateView = function(weatherInfo) {
+    temperatureText = document.getElementById("wetter-temperatur");
+    humidityText = document.getElementById("wetter-feuchtigkeit");
+    windText = document.getElementById("wetter-wind");
+    rainText = document.getElementById("wetter-regen");
+
+    temperatureText.innerHTML = weatherInfo.temp + "&deg;"
+    humidityText.innerHTML = weatherInfo.humidity + "%"
+    windText.innerHTML = weatherInfo.wind_speed + " km/h";
+    rainText.innerHTML = "1h: " + weatherInfo.rain.h1 + "mm      24h: " + weatherInfo.rain.h24 + "mm";
+    if(weatherInfo.rain.current) {
+        document.getElementById("wetter-rain").style.display="inline";
+        document.getElementById("wetter-sunny").style.display="none";
+    } else {
+        document.getElementById("wetter-sunny").style.display="inline";
+        document.getElementById("wetter-rain").style.display="none";
+    }
+}

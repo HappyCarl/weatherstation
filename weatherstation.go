@@ -68,7 +68,7 @@ func main() {
   log.Print("Config has been read.")
 
   //start the serial communication
-  go StartCommunication(cfg)
+  //go StartCommunication(cfg)
 
 
   //start the web server
@@ -82,7 +82,8 @@ func StartWebserver(cfg Config) {
 }
 
 func HttpHandler(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w,"{\"temp\": %.1f,\"humidity\": %.0f,\"wind_speed\": %.1f,\"rain\": {\"1h\": %.0f, \"24h\": %.0f, \"current\": %t }}", current_temp, current_humidity, current_speed, current_rain_1h, current_rain_24h, current_rain)
+  w.Header().Set("Access-Control-Allow-Origin", "*")
+  fmt.Fprintf(w,"{\"temp\": %.1f,\"humidity\": %.0f,\"wind_speed\": %.1f,\"rain\": {\"h1\": %.0f, \"h24\": %.0f, \"current\": %t }}", current_temp, current_humidity, current_speed, current_rain_1h, current_rain_24h, current_rain)
 }
 
 func StartCommunication(cfg Config) {
