@@ -76,7 +76,7 @@ func main() {
 }
 
 func StartWebserver(cfg Config) {
-  log.Print("Starting webserver on" + cfg.Webserver.Address)
+  log.Print("Starting webserver on " + cfg.Webserver.Address)
   http.HandleFunc("/", HttpHandler)
   http.ListenAndServe(cfg.Webserver.Address, nil)
 }
