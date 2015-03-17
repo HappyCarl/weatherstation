@@ -5,3 +5,6 @@ port=/dev/tty.SLAB_USBtoUART
 stationname=Test
 username=u
 password=p
+
+[webserver]
+address=:1337
