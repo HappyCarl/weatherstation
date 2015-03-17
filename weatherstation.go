@@ -9,9 +9,12 @@ import (
   "strings"
   "strconv"
   "time"
-  owm "./openweathermap"
+  "net/http"
+  "fmt"
+  //owm "./openweathermap"
   )
 
+//data type for the config file
 type Config struct {
   Data struct {
     Latitude string
@@ -26,6 +29,9 @@ type Config struct {
     Username string
     Password string
   }
+  Webserver struct {
+    Address string
+  }
 }
 
 var last_update = time.Now()
@@ -36,13 +42,21 @@ var rain_1h_index int = 0
 var rain_24h_array [60*24]int
 var rain_24h_index int = 0
 
+//current values, ment to be served by the http server
+var current_temp float64
+var current_humidity float64
+var current_speed float64
+var current_rain bool
+var current_rain_1h float64
+var current_rain_24h float64
+
 
 func main() {
   var configFile = flag.String("config", "config.gcfg", "Path to Config-File.")
 
   flag.Parse()
 
-
+  //Read and parse the cofig file
   log.Print("Reading Config...")
   err, cfg := ParseConfig(*configFile)
 
@@ -53,16 +67,31 @@ func main() {
 
   log.Print("Config has been read.")
 
+  //start the serial communication
+  go StartCommunication(cfg)
 
-  StartCommunication(cfg.Communication.Port, cfg)
+
+  //start the web server
+  StartWebserver(cfg)
 }
 
-func StartCommunication(port string, cfg Config) {
-  c := &serial.Config{Name: port, Baud: cfg.Communication.BaudRate}
+func StartWebserver(cfg Config) {
+  log.Print("Starting webserver on" + cfg.Webserver.Address)
+  http.HandleFunc("/", HttpHandler)
+  http.ListenAndServe(cfg.Webserver.Address, nil)
+}
+
+func HttpHandler(w http.ResponseWriter, r *http.Request) {
+  fmt.Fprintf(w,"{\"temp\": %.1f,\"humidity\": %.0f,\"wind_speed\": %.1f,\"rain\": {\"1h\": %.0f, \"24h\": %.0f, \"current\": %t }}", current_temp, current_humidity, current_speed, current_rain_1h, current_rain_24h, current_rain)
+}
+
+func StartCommunication(cfg Config) {
+  //initialize the serial connection
+  c := &serial.Config{Name: cfg.Communication.Port, Baud: cfg.Communication.BaudRate}
 
   log.Print("Starting Communication")
 
-
+  //and now open the port
   s, err := serial.OpenPort(c)
   if err != nil || s == nil {
     log.Fatal(err)
@@ -71,7 +100,7 @@ func StartCommunication(port string, cfg Config) {
 
   log.Print("Port has been opened.")
 
-
+  //endlosschleife
   for true {
     var buffer bytes.Buffer
     stop := false
@@ -90,8 +119,9 @@ func StartCommunication(port string, cfg Config) {
 
     data := buffer.String()
     data = strings.TrimSpace(data)
-
-    Upload(data, cfg)
+    
+    //parse the incoming data
+    Parse(data, cfg)
   }
 }
 
@@ -99,10 +129,11 @@ func Convert(data string) (float64, error) {
   return strconv.ParseFloat(strings.TrimSpace(strings.Replace(strings.Replace(data, ",", ".", 1), "\x00", "", 42)), 64)
 }
 
-func Upload(data string, cfg Config) {
+func Parse(data string, cfg Config) {
   log.Print("Received Data: ", data)
   split := strings.Split(data, ";")
 
+  //calculate average temperature
   temperature_1, err1 := Convert(split[3])
   temperature_2, err2 := Convert(split[19])
   temperature         := (temperature_1 + temperature_2) / 2
@@ -115,6 +146,7 @@ func Upload(data string, cfg Config) {
 
   temperature_s := strconv.FormatFloat(temperature, 'f', 1, 64)
 
+  //calculate average humdity
   humidity_1, errA    := Convert(split[11])
   humidity_2, errB    := Convert(split[20])
   humidity            := (humidity_1 + humidity_2) / 2
@@ -127,13 +159,12 @@ func Upload(data string, cfg Config) {
 
   humidity_s := strconv.FormatFloat(humidity, 'f', 1, 64)
 
+  //get the wind speed
   p, _ := Convert(split[21])
   wind_speed       := strconv.FormatFloat(p, 'f', 1, 64)
 
-  //TODO: Calc Rain 4 real
-  //∆1minute, put into db (or local, ggf arraylist)
-  // WS/(2*A(in cm^2, 86.6))
-
+  
+  //and calculate the rain
   rain_ticks, _ := Convert(split[22])
   rain_ticks_s := strconv.FormatFloat(rain_ticks, 'f', 1, 64)
 
@@ -142,8 +173,16 @@ func Upload(data string, cfg Config) {
   rain_24h_s := strconv.FormatFloat(rain_24h, 'f', 1, 64)
   rain             := split[23]
 
-  // TODO: Calculate Rain Values
-  owm.Transmit(temperature_s, humidity_s, wind_speed, rain_1h_s, rain_24h_s, cfg.OpenWeatherMap.StationName, cfg.OpenWeatherMap.Username, cfg.OpenWeatherMap.Password, cfg.Data.Longitude, cfg.Data.Latitude)
+  //owm upload currently not working
+  //owm.Transmit(temperature_s, humidity_s, wind_speed, rain_1h_s, rain_24h_s, cfg.OpenWeatherMap.StationName, cfg.OpenWeatherMap.Username, cfg.OpenWeatherMap.Password, cfg.Data.Longitude, cfg.Data.Latitude)
+  
+  //save all the data to serve them via HTTP
+  current_temp = temperature
+  current_humidity = humidity
+  current_speed = p
+  current_rain = (rain == "1")
+  current_rain_1h = rain_1h
+  current_rain_24h = rain_24h
 
   log.Print("Temp: " + temperature_s +" Humidity: " + humidity_s +" WindSpeed: " + wind_speed +" Rain Ticks: " + rain_ticks_s + " Rain 1h: " + rain_1h_s + " Rain 24h: " + rain_24h_s + " Rain: " + rain)
 }
