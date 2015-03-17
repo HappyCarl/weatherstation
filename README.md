@@ -47,10 +47,32 @@ Das Programm
 Das Wetterstationsprogramm ist in [Go](https://golang.org/) geschrieben. Der Quellcode ist entweder auf [GitHub](https://github.com/HappyCarl/weatherstation/) oder im Ordner `~/weatherstation-source` zu finden. Der Code ist mehr oder weniger dokumentiert.
 Das Programm liest die Daten von dem Empfänger und liest aus dem "LogView" Format die benötigten Daten aus. Eine Erklärung zu dem Format findet sich in der Bedienungsanleitung des USB-Empfängers. Die geparsten Daten werden über einen HTTP-Server als JSON zur Verfügung gestellt. Der HTTP-Server Port muss über den Iserv von `wetterstation.hgo.ol.de:xxxxx` nach `hgo-ol.de:xxxxx` weitergeleitet werden, um aus dem Internet ereichbar zu sein.
 
+Das JSON-Array wird die folgende Form haben:
+
+```javascript
+
+   {
+      "temp": 15.3, //aktuelle Temperatur in °C, mit 1 Nachkommastelle
+      "humidity": 42, //aktuelle Luftfeuchtigkeit in %, ohne Nachommastellen
+      "wind_speed": 3.2, //Windgeschwindigkeit in km/h, mit 1 Nachkommastelle
+      "rain": {
+         "1h": 15, //mm-Wassersäule, gefallen in der letzten Stunde
+         "24h" 42, //mm-Wassersäule, gefallen in den letzten 24 Stunden
+         "current": true //boolean, ob es gerade regnet
+      }
+   }
+
+```
+
 Der Regenmesser
 -------------------------------
 
 Die Wetterstation liefert die Regenwerte als "Anzahl der Wippenschläge". Messungen haben ergeben, dass ungefähr 5ml Wasser die Wippe umkippen lassen und der Zähler erhöhen. Im Programm werden die Wippenschläge mit Hilfe der Oberfläche des Auffangtrichters in mm Wassersäule umgerechnet. In einem Array werden die letzten Wippenschlagdifferenzen über 1h bzw 24h gespeichert und dann die Regenmenge errechnet. 
+
+Die Einbindung auf der Website
+--------------------------------
+
+Die Einbindung auf der Website des Herbartgymnasiums erfolgt über ein JavaScript, dass Client-seitig von dem Programm der Wetterstation auf `hgo-ol.de:xxxxx` beim Laden des Scriptes die aktuellen Wetterdaten lädt. Diese Daten werden dann graphisch aufbereitet und angezeigt. Um die Einbindung in ein CMS (im Fall der Schule TYPO 3) für Laien zu ermöglichen, wird das Script als inline-HTML Script in dem HTML-Template ausgeliefert. 
 
 Anmerkung zum Thema "Funk"
 --------------------------------
