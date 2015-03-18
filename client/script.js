@@ -1,5 +1,5 @@
 
-var weatherStationAddress = "http://localhost5678"; 
+var weatherStationAddress = "http://localhost:5678"; 
 
 //code from http://www.html5rocks.com/en/tutorials/cors/
 function createCORSRequest(method, url) {
