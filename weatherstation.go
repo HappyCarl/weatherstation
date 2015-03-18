@@ -84,11 +84,13 @@ func StartWebserver(cfg Config) {
 
 func DataHttpHandler(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Access-Control-Allow-Origin", "*")
+  log.Print("HTTP: data requested")
   fmt.Fprintf(w,"{\"temp\": %.1f,\"humidity\": %.0f,\"wind_speed\": %.1f,\"rain\": {\"h1\": %.0f, \"h24\": %.0f, \"current\": %t }}", current_temp, current_humidity, current_speed, current_rain_1h, current_rain_24h, current_rain)
 }
 
 func SiteHttpHandler(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Access-Control-Allow-Origin", "*")
+  log.Print("HTTP: client requested")
   http.ServeFile(w,r, "client/index.html")
 }
 
