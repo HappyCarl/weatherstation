@@ -77,13 +77,19 @@ func main() {
 
 func StartWebserver(cfg Config) {
   log.Print("Starting webserver on " + cfg.Webserver.Address)
-  http.HandleFunc("/", HttpHandler)
+  http.HandleFunc("/data", DataHttpHandler)
+  http.HandleFunc("/", SiteHttpHandler)
   http.ListenAndServe(cfg.Webserver.Address, nil)
 }
 
-func HttpHandler(w http.ResponseWriter, r *http.Request) {
+func DataHttpHandler(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Access-Control-Allow-Origin", "*")
   fmt.Fprintf(w,"{\"temp\": %.1f,\"humidity\": %.0f,\"wind_speed\": %.1f,\"rain\": {\"h1\": %.0f, \"h24\": %.0f, \"current\": %t }}", current_temp, current_humidity, current_speed, current_rain_1h, current_rain_24h, current_rain)
+}
+
+func SiteHttpHandler(w http.ResponseWriter, r *http.Request) {
+  w.Header().Set("Access-Control-Allow-Origin", "*")
+  http.ServeFile(w,r, "client/index.html")
 }
 
 func StartCommunication(cfg Config) {
