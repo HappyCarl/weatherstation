@@ -68,7 +68,7 @@ func main() {
   log.Print("Config has been read.")
 
   //start the serial communication
-  //go StartCommunication(cfg)
+  go StartCommunication(cfg)
 
 
   //start the web server
