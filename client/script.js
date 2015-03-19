@@ -50,7 +50,7 @@ updateView = function(weatherInfo) {
     windText = document.getElementById("wetter-wind");
     rainText = document.getElementById("wetter-regen");
 
-    temperatureText.innerHTML = weatherInfo.temp + "&deg;"
+    temperatureText.innerHTML = weatherInfo.temp + "&deg;C"
     humidityText.innerHTML = weatherInfo.humidity + "%"
     windText.innerHTML = weatherInfo.wind_speed + " km/h";
     rainText.innerHTML = "1h: " + weatherInfo.rain.h1 + "mm      24h: " + weatherInfo.rain.h24 + "mm";
