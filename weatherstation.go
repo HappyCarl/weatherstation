@@ -78,7 +78,7 @@ func main() {
 func StartWebserver(cfg Config) {
   log.Print("Starting webserver on " + cfg.Webserver.Address)
   http.HandleFunc("/data", DataHttpHandler)
-  http.HandleFunc("/", SiteHttpHandler)
+  http.Handle("/", http.FileServer(assetFS()))
   http.ListenAndServe(cfg.Webserver.Address, nil)
 }
 
@@ -88,11 +88,6 @@ func DataHttpHandler(w http.ResponseWriter, r *http.Request) {
   fmt.Fprintf(w,"{\"temp\": %.1f,\"humidity\": %.0f,\"wind_speed\": %.1f,\"rain\": {\"h1\": %.0f, \"h24\": %.0f, \"current\": %t }}", current_temp, current_humidity, current_speed, current_rain_1h, current_rain_24h, current_rain)
 }
 
-func SiteHttpHandler(w http.ResponseWriter, r *http.Request) {
-  w.Header().Set("Access-Control-Allow-Origin", "*")
-  log.Print("HTTP: client requested")
-  http.ServeFile(w,r, "client/index.html")
-}
 
 func StartCommunication(cfg Config) {
   //initialize the serial connection
@@ -128,7 +123,7 @@ func StartCommunication(cfg Config) {
 
     data := buffer.String()
     data = strings.TrimSpace(data)
-    
+
     //parse the incoming data
     Parse(data, cfg)
   }
@@ -172,7 +167,7 @@ func Parse(data string, cfg Config) {
   p, _ := Convert(split[21])
   wind_speed       := strconv.FormatFloat(p, 'f', 1, 64)
 
-  
+
   //and calculate the rain
   rain_ticks, _ := Convert(split[22])
   rain_ticks_s := strconv.FormatFloat(rain_ticks, 'f', 1, 64)
@@ -184,7 +179,7 @@ func Parse(data string, cfg Config) {
 
   //owm upload currently not working
   //owm.Transmit(temperature_s, humidity_s, wind_speed, rain_1h_s, rain_24h_s, cfg.OpenWeatherMap.StationName, cfg.OpenWeatherMap.Username, cfg.OpenWeatherMap.Password, cfg.Data.Longitude, cfg.Data.Latitude)
-  
+
   //save all the data to serve them via HTTP
   current_temp = temperature
   current_humidity = humidity
