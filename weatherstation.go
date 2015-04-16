@@ -42,6 +42,8 @@ var rain_1h_index int = 0
 var rain_24h_array [60*24]int
 var rain_24h_index int = 0
 
+var first_data bool = true
+
 //current values, ment to be served by the http server
 var current_temp float64
 var current_humidity float64
@@ -200,16 +202,26 @@ The amount of rain in mm is calculated with (rain_ticks/2*(86.6cm²)) (blame Ton
 
 when a new rain_tick count is received, it
   - calculates the time passed since last update
-  - calculates delta ticks with rain_1h[index]
-  - calculates ticks/minute with delta ticks and passed time
-  - overwrites rain_1h/24h[index+1] until rain_1h/24h[index+1+int(passed time)] with tick/minute
-  - adds all values in the array to get tick count/ time frame(1h/24h)
+  - writes the rain ticks into the array for the passed time
+  - calculates the fallen rain ticks
   - uses math described above
-  - prays to Linux Torvalds for making Linux possible (press Alt+F4 to pray now)
+  - prays to Linus Torvalds for making Linux possible (press Alt+F4 to pray now)
 
 returns rain_1h and rain_24h
  */
 func calculateRain(rain_ticks int) (float64, float64) {
+
+  if first_data {
+    first_data = false
+	
+	for i := 0; i <= len(rain_1h_array); i++ {
+	  rain_1h_array[i] = rain_ticks
+	}
+	
+	for i := 0; i <= len(rain_24h_array); i++ {
+	  rain_24h_array[i] = rain_ticks
+	}
+  }
 
   //time since last run
   minutes_since_last_run := int(time.Since(last_update).Minutes())
@@ -220,41 +232,28 @@ func calculateRain(rain_ticks int) (float64, float64) {
 
   last_update = time.Now()
 
-  //delta ticks
-  var rain_ticks_delta int = 0
-  if(rain_1h_array[rain_1h_index] > rain_ticks) {
-    rain_ticks_delta = ((4096 + rain_ticks) - rain_1h_array[rain_1h_index])
-  } else {
-    rain_ticks_delta = (rain_ticks - rain_1h_array[rain_1h_index])
-  }
-
-  //ticks/minute
-  rain_ticks_minute := int(rain_ticks_delta / minutes_since_last_run)
 
   //update values in arrays
   for i := rain_1h_index; i <= rain_1h_index + minutes_since_last_run; i++ {
-    rain_1h_array[i % len(rain_1h_array)] = rain_ticks_minute
+    rain_1h_array[i % len(rain_1h_array)] = rain_ticks
   }
   rain_1h_index = (rain_1h_index + minutes_since_last_run) % len(rain_1h_array)
 
   for i := rain_24h_index; i <= rain_24h_index + minutes_since_last_run; i++ {
-    rain_24h_array[i % len(rain_1h_array)] = rain_ticks_minute
+    rain_24h_array[i % len(rain_1h_array)] = rain_ticks
   }
   rain_24h_index = (rain_24h_index + minutes_since_last_run) % len(rain_1h_array)
 
-  //sum the arrays
-  rain_1h_sum := 0
-  for i := 0; i < len(rain_1h_array); i++ {
-    rain_1h_sum += rain_1h_array[i];
-  }
+  
+  //now takes the current rain tick and the 1/24 hour ago value and calculates the delta value, representing the fallen rain 
+  rain_1h_delta := rain_1h_array[rain_1h_index] - rain_1h_array[(rain_1h_index + 1) % len(rain_1h_array)]
+  
 
-  rain_24h_sum := 0
-  for i := 0; i < len(rain_24h_array); i++ {
-    rain_24h_sum += rain_24h_array[i];
-  }
+  rain_24h_delta := rain_24h_array[rain_24h_index] - rain_24h_array[(rain_24h_index + 1) % len(rain_24h_array)]
+
   //calculate fallen rain
-  rain_1h := float64(rain_1h_sum) / (2*86.6)
-  rain_24h := float64(rain_24h_sum) / (2*86.6)
+  rain_1h := float64(rain_1h_delta) / (2*86.6)
+  rain_24h := float64(rain_24h_delta) / (2*86.6)
 
   return rain_1h,rain_24h
 }
