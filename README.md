@@ -1,6 +1,8 @@
 HGO Wetterstation Dokumentation
 ===============================
 
+[![Circle CI](https://circleci.com/gh/HappyCarl/weatherstation.svg?style=svg)](https://circleci.com/gh/HappyCarl/weatherstation)
+
 Vorwort
 -------------------------------
 Wir schreiben das Jahr 2015, ein weiterer Abi-Jahrgang ist kurz davor
