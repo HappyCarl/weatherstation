@@ -214,11 +214,11 @@ func calculateRain(rain_ticks int) (float64, float64) {
   if first_data {
     first_data = false
 	
-	for i := 0; i <= len(rain_1h_array); i++ {
+	for i := 0; i < len(rain_1h_array); i++ {
 	  rain_1h_array[i] = rain_ticks
 	}
 	
-	for i := 0; i <= len(rain_24h_array); i++ {
+	for i := 0; i < len(rain_24h_array); i++ {
 	  rain_24h_array[i] = rain_ticks
 	}
   }
