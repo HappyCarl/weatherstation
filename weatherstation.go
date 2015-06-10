@@ -150,7 +150,7 @@ func Parse(data string, cfg Config) {
     temperature = temperature_2
   }
 
-  temperature_s := strconv.FormatFloat(temperature, 'f', 1, 64)
+  temperature_s := strconv.FormatFloat(temperature, 'f', 16, 64)
 
   //calculate average humdity
   humidity_1, errA    := Convert(split[11])
@@ -163,20 +163,20 @@ func Parse(data string, cfg Config) {
     humidity = humidity_2
   }
 
-  humidity_s := strconv.FormatFloat(humidity, 'f', 1, 64)
+  humidity_s := strconv.FormatFloat(humidity, 'f', 16, 64)
 
   //get the wind speed
   p, _ := Convert(split[21])
-  wind_speed       := strconv.FormatFloat(p, 'f', 1, 64)
+  wind_speed       := strconv.FormatFloat(p, 'f', 16, 64)
 
 
   //and calculate the rain
   rain_ticks, _ := Convert(split[22])
-  rain_ticks_s := strconv.FormatFloat(rain_ticks, 'f', 1, 64)
+  rain_ticks_s := strconv.FormatFloat(rain_ticks, 'f', 16, 64)
 
   rain_1h, rain_24h := calculateRain(int(rain_ticks))
-  rain_1h_s := strconv.FormatFloat(rain_1h, 'f', 1, 64)
-  rain_24h_s := strconv.FormatFloat(rain_24h, 'f', 1, 64)
+  rain_1h_s := strconv.FormatFloat(rain_1h, 'f', 16, 64)
+  rain_24h_s := strconv.FormatFloat(rain_24h, 'f', 16, 64)
   rain             := split[23]
 
   //owm upload currently not working
@@ -213,11 +213,11 @@ func calculateRain(rain_ticks int) (float64, float64) {
 
   if first_data {
     first_data = false
-	
+
 	for i := 0; i < len(rain_1h_array); i++ {
 	  rain_1h_array[i] = rain_ticks
 	}
-	
+
 	for i := 0; i < len(rain_24h_array); i++ {
 	  rain_24h_array[i] = rain_ticks
 	}
@@ -244,10 +244,10 @@ func calculateRain(rain_ticks int) (float64, float64) {
   }
   rain_24h_index = (rain_24h_index + minutes_since_last_run) % len(rain_1h_array)
 
-  
-  //now takes the current rain tick and the 1/24 hour ago value and calculates the delta value, representing the fallen rain 
+
+  //now takes the current rain tick and the 1/24 hour ago value and calculates the delta value, representing the fallen rain
   rain_1h_delta := rain_1h_array[rain_1h_index] - rain_1h_array[(rain_1h_index + 1) % len(rain_1h_array)]
-  
+
 
   rain_24h_delta := rain_24h_array[rain_24h_index] - rain_24h_array[(rain_24h_index + 1) % len(rain_24h_array)]
 
