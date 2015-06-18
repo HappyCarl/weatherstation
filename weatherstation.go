@@ -254,7 +254,7 @@ func calculateRain(rainTicks int) (float64, float64) {
 	for i := rain24hIndex; i <= rain24hIndex+minutesSinceLastRun; i++ {
 		rain24hArray[i%len(rain1hArray)] = rainTicks
 	}
-	rain24hIndex = (rain24hIndex + minutesSinceLastRun) % len(rain1hArray)
+	rain24hIndex = (rain24hIndex + minutesSinceLastRun) % len(rain24hArray)
 
 	//now takes the current rain tick and the 1/24 hour ago value and calculates the delta value, representing the fallen rain
 	rain1hDelta := rain1hArray[rain1hIndex] - rain1hArray[(rain1hIndex+1)%len(rain1hArray)]
