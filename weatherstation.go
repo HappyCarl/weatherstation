@@ -81,7 +81,7 @@ func StartWebserver(cfg Config) {
 	log.Print("Starting webserver on " + cfg.Webserver.Address)
 	http.HandleFunc("/data", DataHTTPHandler)
 	http.HandleFunc("/debug", DebugHTTPHandler)
-	http.Handle("/", http.FileServer(assetFS()))
+	//http.Handle("/", http.FileServer(assetFS()))
 	http.ListenAndServe(cfg.Webserver.Address, nil)
 }
 
@@ -144,7 +144,7 @@ func Convert(data string) (float64, error) {
 	return strconv.ParseFloat(strings.TrimSpace(strings.Replace(strings.Replace(data, ",", ".", 1), "\x00", "", 42)), 64)
 }
 
-//Parse thates the received data and parses it
+//Parse takes the received data and parses it
 func Parse(data string, cfg Config) {
 	log.Print("Received Data: ", data)
 	split := strings.Split(data, ";")
@@ -160,8 +160,6 @@ func Parse(data string, cfg Config) {
 		temperature = temperature2
 	}
 
-	temperatureString := strconv.FormatFloat(temperature, 'f', 16, 64)
-
 	//calculate average humdity
 	humidity1, errA := Convert(split[11])
 	humidity2, errB := Convert(split[20])
@@ -173,19 +171,13 @@ func Parse(data string, cfg Config) {
 		humidity = humidity2
 	}
 
-	humidityString := strconv.FormatFloat(humidity, 'f', 16, 64)
-
 	//get the wind speed
-	p, _ := Convert(split[21])
-	windSpeed := strconv.FormatFloat(p, 'f', 16, 64)
+	windSpeed, _ := Convert(split[21])
 
 	//and calculate the rain
 	rainTicks, _ := Convert(split[22])
-	rainTicksString := strconv.FormatFloat(rainTicks, 'f', 16, 64)
 
 	rain1h, rain24h := calculateRain(int(rainTicks))
-	rain1hString := strconv.FormatFloat(rain1h, 'f', 16, 64)
-	rain24hString := strconv.FormatFloat(rain24h, 'f', 16, 64)
 	rain := split[23]
 
 	//owm upload currently not working
@@ -194,12 +186,12 @@ func Parse(data string, cfg Config) {
 	//save all the data to serve them via HTTP
 	currentTemp = temperature
 	currentHumidity = humidity
-	currentSpeed = p
+	currentSpeed = windSpeed
 	currentRain = (rain == "1")
 	currentRain1h = rain1h
 	currentRain24h = rain24h
 
-	log.Print("Temp: " + temperatureString + " Humidity: " + humidityString + " WindSpeed: " + windSpeed + " Rain Ticks: " + rainTicksString + " Rain 1h: " + rain1hString + " Rain 24h: " + rain24hString + " Rain: " + rain)
+	log.Printf("Temp: %.1f Humidity: %.0f WindSpeed: %.1f RainTicks: %.0f Rain 1h: %.1f Rain 24h: %.1f Rain: %b", currentTemp, currentHumidity, currentSpeed, rainTicks, currentRain1h, currentRain24h, currentRain)
 }
 
 /*
