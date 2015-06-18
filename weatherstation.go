@@ -89,7 +89,7 @@ func StartWebserver(cfg Config) {
 func DataHTTPHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	log.Print("HTTP: data requested")
-	fmt.Fprintf(w, "{\"temp\": %.1f,\"humidity\": %.0f,\"windSpeed\": %.1f,\"rain\": {\"h1\": %.1f, \"h24\": %.1f, \"current\": %t }}", currentTemp, currentHumidity, currentSpeed, currentRain1h, currentRain24h, currentRain)
+	fmt.Fprintf(w, "{\"temp\": %.1f,\"humidity\": %.0f,\"wind_speed\": %.1f,\"rain\": {\"h1\": %.1f, \"h24\": %.1f, \"current\": %t }}", currentTemp, currentHumidity, currentSpeed, currentRain1h, currentRain24h, currentRain)
 }
 
 //DebugHTTPHandler returns some debug statistics
