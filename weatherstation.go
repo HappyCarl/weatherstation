@@ -208,7 +208,7 @@ Calculates the fallen rain
 1 rain tick means that 5ml water fell. the ticks are absolute and reset after reaching 4096 to 0
 The area collecting the rain is 86.6cm² big
 So at first we calculate the the ticks in the last 1/24h and multiply it by 0.005, having the amount of L water that fell on the funnel
-We then divide that by 0.00866m^2 and multiply it by 1m^2 to get the amount of water that fell on a square meter
+We then divide that by 0.00866m^2 to get the amount of water that fell on a square meter(Unit L/m^2 = mm)
 1L on a square meter equals 1mm high water
 
 So the formula is '(ticks * 0.005)/0.00866'
