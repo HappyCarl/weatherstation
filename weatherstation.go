@@ -79,7 +79,8 @@ func main() {
 //StartWebserver starts and initializes the web server to serve the weather data
 func StartWebserver(cfg Config) {
 	log.Print("Starting webserver on " + cfg.Webserver.Address)
-	http.HandleFunc("/data", DataHttpHandler)
+	http.HandleFunc("/data", DataHTTPHandler)
+	http.HandleFunc("/debug", DebugHTTPHandler)
 	http.Handle("/", http.FileServer(assetFS()))
 	http.ListenAndServe(cfg.Webserver.Address, nil)
 }
@@ -89,6 +90,12 @@ func DataHTTPHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	log.Print("HTTP: data requested")
 	fmt.Fprintf(w, "{\"temp\": %.1f,\"humidity\": %.0f,\"windSpeed\": %.1f,\"rain\": {\"h1\": %.1f, \"h24\": %.1f, \"current\": %t }}", currentTemp, currentHumidity, currentSpeed, currentRain1h, currentRain24h, currentRain)
+}
+
+//DebugHTTPHandler returns some debug statistics
+func DebugHTTPHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("HTTP: debug requested")
+	fmt.Fprintf(w, "Rain1h: %s \nRain24h: %s", string(rain1hArray[:]), string(rain24hArray[:]))
 }
 
 //StartCommunication opens the serial connection and reads the data from it
