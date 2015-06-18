@@ -95,7 +95,7 @@ func DataHTTPHandler(w http.ResponseWriter, r *http.Request) {
 //DebugHTTPHandler returns some debug statistics
 func DebugHTTPHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("HTTP: debug requested")
-	fmt.Fprintf(w, "Rain1h: %s \nRain24h: %s", ArrayToString(rain1hArray), ArrayToString(rain24hArray))
+	fmt.Fprintf(w, "Rain1h: %s \nRain24h: %s", ArrayToString(rain1hArray[:]), ArrayToString(rain24hArray[:]))
 }
 
 //StartCommunication opens the serial connection and reads the data from it
