@@ -207,7 +207,11 @@ Calculates the fallen rain
 
 1 rain tick means that 5ml water fell. the ticks are absolute and reset after reaching 4096 to 0
 The area collecting the rain is 86.6cm² big
-The amount of rain in mm is calculated with (rainTicks/2*(86.6cm²)) (blame Tony Metger if this does not work)
+So at first we calculate the the ticks in the last 1/24h and multiply it by 0.005, having the amount of L water that fell on the funnel
+We then divide that by 0.00866m^2 and multiply it by 1m^2 to get the amount of water that fell on a square meter
+1L on a square meter equals 1mm high water
+
+So the formula is '(ticks * 0.005)/0.00866'
 
 when a new rain_tick count is received, it
   - calculates the time passed since last update
@@ -258,8 +262,10 @@ func calculateRain(rainTicks int) (float64, float64) {
 	rain24hDelta := rain24hArray[rain24hIndex] - rain24hArray[(rain24hIndex+1)%len(rain24hArray)]
 
 	//calculate fallen rain
-	rain1h := float64(rain1hDelta) / (2 * 86.6)
-	rain24h := float64(rain24hDelta) / (2 * 86.6)
+	//rain1h := float64(rain1hDelta) / (2 * 86.6) old and wrong formula
+	rain1h := ((float64(rain1hDelta) * 0.005) / 0.00866)
+	//rain24h := float64(rain24hDelta) / (2 * 86.6)
+	rain24h := ((float64(rain24hDelta) * 0.005) / 0.00866)
 
 	return rain1h, rain24h
 }
