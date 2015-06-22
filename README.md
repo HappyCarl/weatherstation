@@ -40,14 +40,14 @@ Der Server läuft, und das soll auch so bleiben... Änderungen sollten *nur von 
 Es ist ein Ubuntu 14.04.2 LTS Server (64-bit), der bis zum Jahre 2017 mit Sicherheitsupdates versorgt wird.
 Systemupdates werden wöchentlich eingespielt, das System startet monatlich 1x neu.
 
-Unter Iserv ist der PC im alten Serverraum 89 eingetragen, der Hostname ist `wetterstation.hgo-ol.de`, die IP ist `10.16.89.42`.  Der Server ist über SSH auf Port 22 zu erreichen, Benutzername ist `wetterstation`. Das Passwort findet sich bei den analogen Unterlagen zur Wetterstation und/oder auf der ausgedruckten Version dieses Zettels. Falls das Passwort nicht mehr aufzufinden ist, die Festplatte ist nicht verschlüsselt und die Daten liegen in einer LVM Partition.
+Unter Iserv ist der PC im alten Serverraum 89 eingetragen, der Hostname ist `wetterstation.hgo-ol.de`, die IP ist `10.16.89.42`.  Der Server ist über SSH auf Port 22 zu erreichen, Benutzername ist `wetterstation`. Das Passwort findet sich bei den analogen Unterlagen zur Wetterstation und/oder auf der ausgedruckten Version dieses Zettels. Falls das Passwort nicht mehr aufzufinden ist, die Festplatte ist nicht verschlüsselt und die Daten liegen in einer LVM Partition. In dem Fall kann ein Live Linux gebootet werden und das Passwort entfernt/geändert werden.
 
 
 Das Programm
 -------------------------------
 
 Das Wetterstationsprogramm ist in [Go](https://golang.org/) geschrieben. Der Quellcode ist entweder auf [GitHub](https://github.com/HappyCarl/weatherstation/) oder im Ordner `~/weatherstation-source` zu finden. Der Code ist mehr oder weniger dokumentiert.
-Das Programm liest die Daten von dem Empfänger und liest aus dem "LogView" Format die benötigten Daten aus. Eine Erklärung zu dem Format findet sich in der Bedienungsanleitung des USB-Empfängers. Die geparsten Daten werden über einen HTTP-Server als JSON zur Verfügung gestellt. Der HTTP-Server Port muss über den Iserv von `wetterstation.hgo.ol.de:xxxxx` nach `hgo-ol.de:xxxxx` weitergeleitet werden, um aus dem Internet ereichbar zu sein.
+Das Programm liest die Daten von dem Empfänger und liest aus dem "LogView" Format die benötigten Daten aus. Eine Erklärung zu dem Format findet sich in der Bedienungsanleitung des USB-Empfängers. Die geparsten Daten werden über einen HTTP-Server als JSON zur Verfügung gestellt. Der HTTP-Server Port muss über den Iserv von `wetterstation.hgo.ol.de:8080` nach `hgo-ol.de:42424` weitergeleitet werden, um aus dem Internet ereichbar zu sein. Damit das Wetter auch aus dem Schulnetzwerk mit dem gleichen Skript, dass Anfragen an Port `42424` stellt, abrufbar ist, wurde eine lokale Portweiterleitung von `42424` nach `8080` für TCP mit `iptables` eingerichtet.
 
 Das JSON-Array wird die folgende Form haben:
 
@@ -69,12 +69,12 @@ Das JSON-Array wird die folgende Form haben:
 Der Regenmesser
 -------------------------------
 
-Die Wetterstation liefert die Regenwerte als "Anzahl der Wippenschläge". Messungen haben ergeben, dass ungefähr 5ml Wasser die Wippe umkippen lassen und der Zähler erhöhen. Im Programm werden die Wippenschläge mit Hilfe der Oberfläche des Auffangtrichters in mm Wassersäule umgerechnet. In einem Array werden die letzten Wippenschlagdifferenzen über 1h bzw 24h gespeichert und dann die Regenmenge errechnet. 
+Die Wetterstation liefert die Regenwerte als "Anzahl der Wippenschläge". Messungen haben ergeben, dass ungefähr 5ml Wasser die Wippe umkippen lassen und der Zähler erhöhen. Im Programm werden die Wippenschläge mit Hilfe der Oberfläche des Auffangtrichters in mm Wassersäule umgerechnet. In einem Array werden die letzten Wippenschlagdifferenzen über 1h bzw 24h gespeichert und dann die Regenmenge errechnet. Zu Debug Zwecken ist es möglich, den Zustand der Arrays über `wetterstation.hgo-ol.de:42424/debug` einzusehen.
 
 Die Einbindung auf der Website
 --------------------------------
 
-Die Einbindung auf der Website des Herbartgymnasiums erfolgt über ein JavaScript, dass Client-seitig von dem Programm der Wetterstation auf `hgo-ol.de:xxxxx` beim Laden des Scriptes die aktuellen Wetterdaten lädt. Diese Daten werden dann graphisch aufbereitet und angezeigt. Um die Einbindung in ein CMS (im Fall der Schule TYPO 3) für Laien zu ermöglichen, wird das Script als inline-HTML Script in dem HTML-Template ausgeliefert. 
+Die Einbindung auf der Website des Herbartgymnasiums erfolgt über ein JavaScript, dass Client-seitig von dem Programm der Wetterstation auf `wetterstation.hgo-ol.de:42424/data` beim Laden des Scriptes die aktuellen Wetterdaten lädt. Diese Daten werden dann graphisch aufbereitet und angezeigt. 
 
 Anmerkung zum Thema "Funk"
 --------------------------------
