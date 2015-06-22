@@ -95,7 +95,7 @@ func DataHTTPHandler(w http.ResponseWriter, r *http.Request) {
 //DebugHTTPHandler returns some debug statistics
 func DebugHTTPHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("HTTP: debug requested")
-	fmt.Fprintf(w, "Rain1h: %s \nRain24h: %s", ArrayToString(rain1hArray[:]), ArrayToString(rain24hArray[:]))
+	fmt.Fprintf(w, "Rain1h: %s \nRain1hIndex: %d \nRain24h: %s\nRain24hIndex: %d", ArrayToString(rain1hArray[:]), rain1hIndex, ArrayToString(rain24hArray[:]), rain24hIndex)
 }
 
 //StartCommunication opens the serial connection and reads the data from it
@@ -236,6 +236,7 @@ func calculateRain(rainTicks int) (float64, float64) {
 	}
 
 	lastUpdate = time.Now()
+	log.Printf("Minutes since Last run: %d", minutesSinceLastRun)
 
 	//update values in arrays
 	for i := rain1hIndex; i <= rain1hIndex+minutesSinceLastRun; i++ {
