@@ -106,7 +106,7 @@ func main() {
 	db.CreateTable(&WeatherData{})
 
 	//start the serial communication
-	go StartCommunication(cfg)
+	//go StartCommunication(cfg)
 
 	//start the web server
 	StartWebserver(cfg)
@@ -154,10 +154,8 @@ func GetRainTicksSince(t1, t2 time.Time) (int){
 	}
 	var overflowCounter = 0
 	var lastTicks = 0
-	for i, dataset := range weatherData {
-		if i == 0 {
-			lastTicks = dataset.RainTicks
-		}
+	var initTicks = weatherData[0].RainTicks
+	for _, dataset := range weatherData {
 		if dataset.RainTicks < lastTicks {
 			overflowCounter++
 		}
@@ -165,7 +163,7 @@ func GetRainTicksSince(t1, t2 time.Time) (int){
 	}
 	log.Print("Found " + strconv.Itoa(overflowCounter) + " overflows")
 
-	return overflowCounter * 4096 + lastTicks
+	return overflowCounter * 4096 + lastTicks - initTicks
 }
 
 //StartCommunication opens the serial connection and reads the data from it

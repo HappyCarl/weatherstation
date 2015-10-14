@@ -10,4 +10,4 @@ password=p
 address=:1337
 
 [database]
-connection=weather:weather@unix(/var/run/mysqld/mysqld.sock)/weather?parseTime=true
+connection=weather:WetterdatenSindSchonSehrSpannend@tcp(localhost:9306)/weather?parseTime=true
