@@ -32,6 +32,9 @@ type Config struct {
 	Webserver struct {
 		Address string
 	}
+	Database struct {
+		Connection string
+	}
 }
 
 var lastUpdate = time.Now()

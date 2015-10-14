@@ -8,3 +8,6 @@ password=p
 
 [webserver]
 address=:1337
+
+[database]
+connection=
