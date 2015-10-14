@@ -106,7 +106,7 @@ func main() {
 	db.CreateTable(&WeatherData{})
 
 	//start the serial communication
-	//go StartCommunication(cfg)
+	go StartCommunication(cfg)
 
 	//start the web server
 	StartWebserver(cfg)
