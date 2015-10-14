@@ -42,7 +42,9 @@ type Config struct {
 }
 
 type WeatherData struct {
-	gorm.Model
+	ID        uint `gorm:"primary_key"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	Temperature float64
 	Humidity float64
 	Windspeed float64
@@ -104,13 +106,11 @@ func main() {
 
 	db.CreateTable(&WeatherData{})
 
-	test := WeatherData{Temperature: 12.3, Humidity: 45, Windspeed: 5.6, Raining: true, RainTicks: 5}
+	test := WeatherData{Temperature: 4.6, Humidity: 56, Windspeed: 13.5, Raining: true, RainTicks: 42}
 	db.Create(&test)
 
-
-
 	//start the serial communication
-	go StartCommunication(cfg)
+	//go StartCommunication(cfg)
 
 	//start the web server
 	StartWebserver(cfg)
@@ -131,7 +131,15 @@ func StartWebserver(cfg Config) {
 func DataHTTPHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	log.Print("HTTP: data requested")
-	fmt.Fprintf(w, "{\"temp\": %.1f,\"humidity\": %.0f,\"wind_speed\": %.1f,\"rain\": {\"h1\": %.1f, \"h24\": %.1f, \"current\": %t }}", currentTemp, currentHumidity, currentSpeed, currentRain1h, currentRain24h, currentRain)
+
+	//get the latest record
+	var record = WeatherData{}
+  res := db.Order("created_at desc").First(&record)
+	if res.Error != nil {
+		fmt.Fprint(w, "{\"error\": \"Something went wrong when querying the database!\"}")
+		return
+	}
+	fmt.Fprintf(w, "{\"temp\": %.1f,\"humidity\": %.0f,\"wind_speed\": %.1f,\"rain\": {\"h1\": %.1f, \"h24\": %.1f, \"current\": %t }}", record.Temperature, record.Humidity, record.Windspeed, currentRain1h, currentRain24h, record.Raining)
 }
 
 //DebugHTTPHandler returns some debug statistics
@@ -223,8 +231,8 @@ func Parse(data string, cfg Config) {
 	rain := split[23]
 
 	//Put all the data into the database
-	data := WeatherData{Temperature: temperature, Humidity: humidity, Windspeed: windSpeed, Raining: (rain == "1"), RainTicks: rainTicks}
-	db.Create(&data)
+	weatherdata := WeatherData{Temperature: temperature, Humidity: humidity, Windspeed: windSpeed, Raining: (rain == "1"), RainTicks: int(rainTicks)}
+	db.Create(&weatherdata)
 
 	log.Printf("Temp: %.1f Humidity: %.0f WindSpeed: %.1f RainTicks: %.0f Rain: %b", currentTemp, currentHumidity, currentSpeed, rainTicks, currentRain)
 }
