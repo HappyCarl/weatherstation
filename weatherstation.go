@@ -102,7 +102,6 @@ func main() {
 		return
 	}
 	defer db.Close()
-	db.LogMode(true)
 
 	db.CreateTable(&WeatherData{})
 
