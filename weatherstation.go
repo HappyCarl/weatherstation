@@ -12,9 +12,11 @@ import (
 	"strings"
 	"time"
 	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
 	//owm "./openweathermap"
 )
-import _ "github.com/go-sql-driver/mysql"
+
 
 //Config is the data type for the config file
 type Config struct {
@@ -38,7 +40,17 @@ type Config struct {
 		Connection string
 	}
 }
-var database *sql.DB
+
+type WeatherData struct {
+	gorm.Model
+	Temperature float64
+	Humidity float64
+	Windspeed float64
+	Raining bool
+	RainTicks int
+}
+var dbSql *sql.DB
+var db gorm.DB
 
 var lastUpdate = time.Now()
 
@@ -76,20 +88,26 @@ func main() {
 	log.Print("Config has been read.")
 
 	//Setting up the database
-	database, err = sql.Open("mysql", cfg.Database.Connection)
+	dbSql, err = sql.Open("mysql", cfg.Database.Connection)
 	if err != nil {
 		//Abort
 		log.Fatal(err)
 		return
 	}
-	defer database.Close()
-
-	//Testing connection
-	err = database.Ping()
+	db , err = gorm.Open("mysql", dbSql)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
+	defer db.Close()
+	db.LogMode(true)
+
+	db.CreateTable(&WeatherData{})
+
+	test := WeatherData{Temperature: 12.3, Humidity: 45, Windspeed: 5.6, Raining: true, RainTicks: 5}
+	db.Create(&test)
+
+
 
 	//start the serial communication
 	go StartCommunication(cfg)
@@ -198,24 +216,17 @@ func Parse(data string, cfg Config) {
 	//get the wind speed
 	windSpeed, _ := Convert(split[21])
 
-	//and calculate the rain
+	//and get the rain
 	rainTicks, _ := Convert(split[22])
 
-	rain1h, rain24h := calculateRain(int(rainTicks))
+	//rain1h, rain24h := calculateRain(int(rainTicks))
 	rain := split[23]
 
-	//owm upload currently not working
-	//owm.Transmit(temperatureString, humidityString, windSpeed, rain1hString, rain24hString, cfg.OpenWeatherMap.StationName, cfg.OpenWeatherMap.Username, cfg.OpenWeatherMap.Password, cfg.Data.Longitude, cfg.Data.Latitude)
+	//Put all the data into the database
+	data := WeatherData{Temperature: temperature, Humidity: humidity, Windspeed: windSpeed, Raining: (rain == "1"), RainTicks: rainTicks}
+	db.Create(&data)
 
-	//save all the data to serve them via HTTP
-	currentTemp = temperature
-	currentHumidity = humidity
-	currentSpeed = windSpeed
-	currentRain = (rain == "1")
-	currentRain1h = rain1h
-	currentRain24h = rain24h
-
-	log.Printf("Temp: %.1f Humidity: %.0f WindSpeed: %.1f RainTicks: %.0f Rain 1h: %.1f Rain 24h: %.1f Rain: %b", currentTemp, currentHumidity, currentSpeed, rainTicks, currentRain1h, currentRain24h, currentRain)
+	log.Printf("Temp: %.1f Humidity: %.0f WindSpeed: %.1f RainTicks: %.0f Rain: %b", currentTemp, currentHumidity, currentSpeed, rainTicks, currentRain)
 }
 
 /*

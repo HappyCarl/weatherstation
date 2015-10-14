@@ -10,4 +10,4 @@ password=p
 address=:1337
 
 [database]
-connection=
+connection=weather:weather@unix(/var/run/mysqld/mysqld.sock)/weather
