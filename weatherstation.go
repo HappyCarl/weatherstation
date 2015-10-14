@@ -106,8 +106,12 @@ func main() {
 
 	db.CreateTable(&WeatherData{})
 
-	test := WeatherData{Temperature: 4.6, Humidity: 56, Windspeed: 13.5, Raining: true, RainTicks: 42}
-	db.Create(&test)
+
+	for i := 0; i < 1440; i++ {
+		test := WeatherData{Temperature: 4.6, Humidity: 56, Windspeed: 13.5, Raining: true, RainTicks: 42}
+		db.Create(&test)
+	}
+
 
 	//start the serial communication
 	//go StartCommunication(cfg)
@@ -139,13 +143,39 @@ func DataHTTPHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "{\"error\": \"Something went wrong when querying the database!\"}")
 		return
 	}
-	fmt.Fprintf(w, "{\"temp\": %.1f,\"humidity\": %.0f,\"wind_speed\": %.1f,\"rain\": {\"h1\": %.1f, \"h24\": %.1f, \"current\": %t }}", record.Temperature, record.Humidity, record.Windspeed, currentRain1h, currentRain24h, record.Raining)
+	now := time.Now()
+
+	rain1h := CalculateRain(GetRainTicksSince(now, now.Add(-1 * time.Hour)))
+	rain24h := CalculateRain(GetRainTicksSince(now, now.Add(-24 * time.Hour)))
+
+	fmt.Fprintf(w, "{\"temp\": %.1f,\"humidity\": %.0f,\"wind_speed\": %.1f,\"rain\": {\"h1\": %.1f, \"h24\": %.1f, \"current\": %t }}", record.Temperature, record.Humidity, record.Windspeed, rain1h, rain24h, record.Raining)
 }
 
 //DebugHTTPHandler returns some debug statistics
 func DebugHTTPHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("HTTP: debug requested")
 	fmt.Fprintf(w, "Rain1h: %s \nRain1hIndex: %d \nRain24h: %s\nRain24hIndex: %d", ArrayToString(rain1hArray[:]), rain1hIndex, ArrayToString(rain24hArray[:]), rain24hIndex)
+}
+
+func GetRainTicksSince(t1, t2 time.Time) (int){
+	log.Print(t2)
+	weatherData := []WeatherData{}
+	res := db.Where("created_at BETWEEN ? AND ?", t2, t1).Order("created_at desc").Find(&weatherData)
+	if res.Error != nil {
+		log.Print("An error occured getting the weatherdata")
+		return -1
+	}
+	var overflowCounter = 0
+	var lastTicks = 0
+	for _, dataset := range weatherData {
+		if dataset.RainTicks < lastTicks {
+			overflowCounter++
+		}
+		lastTicks = dataset.RainTicks
+	}
+	log.Print("Found " + strconv.Itoa(overflowCounter) + " overflows")
+
+	return overflowCounter * 4096 + lastTicks
 }
 
 //StartCommunication opens the serial connection and reads the data from it
@@ -242,68 +272,20 @@ Calculates the fallen rain
 
 1 rain tick means that 5ml water fell. the ticks are absolute and reset after reaching 4096 to 0
 The area collecting the rain is 86.6cm² big
-So at first we calculate the the ticks in the last 1/24h and multiply it by 0.005, having the amount of L water that fell on the funnel
+So we get the ticks and multiply it by 0.005, having the amount of L water that fell on the funnel
 We then divide that by 0.00866m^2 to get the amount of water that fell on a square meter(Unit L/m^2 = mm)
 1L on a square meter equals 1mm high water
 
 So the formula is '(ticks * 0.005)/0.00866'
 
-when a new rain_tick count is received, it
-  - calculates the time passed since last update
-  - writes the rain ticks into the array for the passed time
-  - calculates the fallen rain ticks
-  - uses math described above
-  - prays to Linus Torvalds for making Linux possible (press Alt+F4 to pray now)
-
-returns rain1h and rain24h
+returns rain
 */
-func calculateRain(rainTicks int) (float64, float64) {
-
-	if firstData {
-		firstData = false
-
-		for i := 0; i < len(rain1hArray); i++ {
-			rain1hArray[i] = rainTicks
-		}
-
-		for i := 0; i < len(rain24hArray); i++ {
-			rain24hArray[i] = rainTicks
-		}
-	}
-
-	//time since last run
-	minutesSinceLastRun := int(time.Since(lastUpdate).Minutes())
-	//horrible hack for first run, when receiving data without passing a minute
-	if minutesSinceLastRun == 0 {
-		minutesSinceLastRun = 1
-	}
-
-	lastUpdate = time.Now()
-	log.Printf("Minutes since Last run: %d", minutesSinceLastRun)
-
-	//update values in arrays
-	for i := rain1hIndex; i <= rain1hIndex+minutesSinceLastRun; i++ {
-		rain1hArray[i%len(rain1hArray)] = rainTicks
-	}
-	rain1hIndex = (rain1hIndex + minutesSinceLastRun) % len(rain1hArray)
-
-	for i := rain24hIndex; i <= rain24hIndex+minutesSinceLastRun; i++ {
-		rain24hArray[i%len(rain1hArray)] = rainTicks
-	}
-	rain24hIndex = (rain24hIndex + minutesSinceLastRun) % len(rain24hArray)
-
-	//now takes the current rain tick and the 1/24 hour ago value and calculates the delta value, representing the fallen rain
-	rain1hDelta := rain1hArray[rain1hIndex] - rain1hArray[(rain1hIndex+1)%len(rain1hArray)]
-
-	rain24hDelta := rain24hArray[rain24hIndex] - rain24hArray[(rain24hIndex+1)%len(rain24hArray)]
-
+func CalculateRain(rainTicks int) (float64) {
 	//calculate fallen rain
 	//rain1h := float64(rain1hDelta) / (2 * 86.6) old and wrong formula
-	rain1h := ((float64(rain1hDelta) * 0.005) / 0.00866)
-	//rain24h := float64(rain24hDelta) / (2 * 86.6)
-	rain24h := ((float64(rain24hDelta) * 0.005) / 0.00866)
+	rain := ((float64(rainTicks) * 0.005) / 0.00866)
 
-	return rain1h, rain24h
+	return rain
 }
 
 //ParseConfig does exactly what the name says...
