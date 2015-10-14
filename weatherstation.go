@@ -11,8 +11,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"database/sql"
 	//owm "./openweathermap"
 )
+import _ "github.com/go-sql-driver/mysql"
 
 //Config is the data type for the config file
 type Config struct {
@@ -36,6 +38,7 @@ type Config struct {
 		Connection string
 	}
 }
+var database *sql.DB
 
 var lastUpdate = time.Now()
 
@@ -72,12 +75,30 @@ func main() {
 
 	log.Print("Config has been read.")
 
+	//Setting up the database
+	database, err = sql.Open("mysql", cfg.Database.Connection)
+	if err != nil {
+		//Abort
+		log.Fatal(err)
+		return
+	}
+	defer database.Close()
+
+	//Testing connection
+	err = database.Ping()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
 	//start the serial communication
 	go StartCommunication(cfg)
 
 	//start the web server
 	StartWebserver(cfg)
 }
+
+
 
 //StartWebserver starts and initializes the web server to serve the weather data
 func StartWebserver(cfg Config) {
