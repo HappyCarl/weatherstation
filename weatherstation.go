@@ -106,13 +106,6 @@ func main() {
 
 	db.CreateTable(&WeatherData{})
 
-
-	for i := 0; i < 1440; i++ {
-		test := WeatherData{Temperature: 4.6, Humidity: 56, Windspeed: 13.5, Raining: true, RainTicks: 42}
-		db.Create(&test)
-	}
-
-
 	//start the serial communication
 	//go StartCommunication(cfg)
 
@@ -126,7 +119,6 @@ func main() {
 func StartWebserver(cfg Config) {
 	log.Print("Starting webserver on " + cfg.Webserver.Address)
 	http.HandleFunc("/data", DataHTTPHandler)
-	http.HandleFunc("/debug", DebugHTTPHandler)
 	//http.Handle("/", http.FileServer(assetFS()))
 	http.ListenAndServe(cfg.Webserver.Address, nil)
 }
@@ -149,12 +141,6 @@ func DataHTTPHandler(w http.ResponseWriter, r *http.Request) {
 	rain24h := CalculateRain(GetRainTicksSince(now, now.Add(-24 * time.Hour)))
 
 	fmt.Fprintf(w, "{\"temp\": %.1f,\"humidity\": %.0f,\"wind_speed\": %.1f,\"rain\": {\"h1\": %.1f, \"h24\": %.1f, \"current\": %t }}", record.Temperature, record.Humidity, record.Windspeed, rain1h, rain24h, record.Raining)
-}
-
-//DebugHTTPHandler returns some debug statistics
-func DebugHTTPHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("HTTP: debug requested")
-	fmt.Fprintf(w, "Rain1h: %s \nRain1hIndex: %d \nRain24h: %s\nRain24hIndex: %d", ArrayToString(rain1hArray[:]), rain1hIndex, ArrayToString(rain24hArray[:]), rain24hIndex)
 }
 
 func GetRainTicksSince(t1, t2 time.Time) (int){
