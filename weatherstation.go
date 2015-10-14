@@ -154,7 +154,10 @@ func GetRainTicksSince(t1, t2 time.Time) (int){
 	}
 	var overflowCounter = 0
 	var lastTicks = 0
-	for _, dataset := range weatherData {
+	for i, dataset := range weatherData {
+		if i == 0 {
+			lastTicks = dataset.RainTicks
+		}
 		if dataset.RainTicks < lastTicks {
 			overflowCounter++
 		}
