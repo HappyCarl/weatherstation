@@ -17,6 +17,8 @@ clean:
 deps:
 	go get github.com/tarm/goserial
 	go get code.google.com/p/gcfg
+	go get github.com/go-sql-driver/mysql
+	go get github.com/jinzhu/gorm
 	go get github.com/jteeuwen/go-bindata/...
 	go get github.com/elazarl/go-bindata-assetfs/...
 	go-bindata-assetfs client/
