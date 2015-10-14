@@ -132,6 +132,8 @@ func DataHTTPHandler(w http.ResponseWriter, r *http.Request) {
   res := db.Order("created_at desc").First(&record)
 	if res.Error != nil {
 		fmt.Fprint(w, "{\"error\": \"Something went wrong when querying the database!\"}")
+		log.Print("Something went wrong:")
+		log.Print(res)
 		return
 	}
 	now := time.Now()
