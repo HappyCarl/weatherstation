@@ -153,18 +153,19 @@ func GetRainTicksSince(t1, t2 time.Time) (int){
 		return -1
 	}
 	var overflowCounter = 0
-	var lastTicks = 0
-	var initTicks = weatherData[0].RainTicks
+	var lastTicks = weatherData[0].RainTicks
+	var initTicks = weatherData[len(weatherData) -1].RainTicks
 	for _, dataset := range weatherData {
-		if dataset.RainTicks < lastTicks {
-			log.Print("OVERFLOW not at " + strconv.Itoa(overflowCounter) + " (" + strconv.Itoa(dataset.RainTicks) + "<" + strconv.Itoa(lastTicks))
+		if dataset.RainTicks > lastTicks {
+			log.Print("OVERFLOW now at " + strconv.Itoa(overflowCounter) + " (" + strconv.Itoa(dataset.RainTicks) + ">" + strconv.Itoa(lastTicks) + ")")
 			overflowCounter++
 		}
 		lastTicks = dataset.RainTicks
 	}
 	log.Print("Found " + strconv.Itoa(overflowCounter) + " overflows")
-
-	return overflowCounter * 4096 + lastTicks - initTicks
+	var result = overflowCounter * 4096 + weatherData[0].RainTicks - initTicks
+	log.Printf("%d Ticks calculated (endTicks=%d, startTicks=%d)", result, weatherData[0].RainTicks, initTicks)
+	return result
 }
 
 //StartCommunication opens the serial connection and reads the data from it
@@ -253,7 +254,7 @@ func Parse(data string, cfg Config) {
 	weatherdata := WeatherData{Temperature: temperature, Humidity: humidity, Windspeed: windSpeed, Raining: (rain == "1"), RainTicks: int(rainTicks)}
 	db.Create(&weatherdata)
 
-	log.Printf("Temp: %.1f Humidity: %.0f WindSpeed: %.1f RainTicks: %.0f Rain: %b", currentTemp, currentHumidity, currentSpeed, rainTicks, currentRain)
+	log.Printf("Temp: %.1f Humidity: %.0f WindSpeed: %.1f RainTicks: %.0f Rain: %b", temperature, humidity, windSpeed, rainTicks, currentRain)
 }
 
 /*
