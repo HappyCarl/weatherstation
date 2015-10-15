@@ -157,6 +157,7 @@ func GetRainTicksSince(t1, t2 time.Time) (int){
 	var initTicks = weatherData[0].RainTicks
 	for _, dataset := range weatherData {
 		if dataset.RainTicks < lastTicks {
+			log.Print("OVERFLOW not at " + strconv.Itoa(overflowCounter) + " (" + strconv.Itoa(dataset.RainTicks) + "<" + strconv.Itoa(lastTicks))
 			overflowCounter++
 		}
 		lastTicks = dataset.RainTicks
