@@ -251,8 +251,12 @@ func Parse(data string, cfg Config) {
 	rain := split[23]
 
 	//Put all the data into the database
-	weatherdata := WeatherData{Temperature: temperature, Humidity: humidity, Windspeed: windSpeed, Raining: (rain == "1"), RainTicks: int(rainTicks)}
-	db.Create(&weatherdata)
+	//Sometimes there are erroros, where everything is 0
+	if humidity != 0 && int(rainTicks) != 0 {
+		weatherdata := WeatherData{Temperature: temperature, Humidity: humidity, Windspeed: windSpeed, Raining: (rain == "1"), RainTicks: int(rainTicks)}
+		db.Create(&weatherdata)
+	}
+
 
 	log.Printf("Temp: %.1f Humidity: %.0f WindSpeed: %.1f RainTicks: %.0f Rain: %b", temperature, humidity, windSpeed, rainTicks, currentRain)
 }
