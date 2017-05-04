@@ -81,4 +81,4 @@ Anmerkung zum Thema "Funk"
 
 Wie in dieser Dokumentation schon ersichtlich geworden sein sollte, kommunizieren die Wettersensoren über ein [Funk](https://www.youtube.com/watch?v=mUsn880UWPQ)-Protokoll.
 
-![](http://i.minus.com/iwmeWi3Dkfpcx.gif)
+![](http://2damnfunny.com/wp-content/uploads/2013/12/Techno-Viking-Robot-Go-Into-Funk-Overload-In-Napoleon-Dynamite-Dance-Gif.gif)
